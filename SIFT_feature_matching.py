@@ -101,9 +101,9 @@ def display_results(image_paths, predicted_labels, true_labels, label_to_id):
 
 # Parameters
 num_clusters = 100
-root_dir_train = 'data/train'
-root_dir_test = 'data/test'
-root_dir_val = 'data/validation'
+root_dir_train = 'resized_data/train'
+root_dir_test = 'resized_data/test'
+root_dir_val = 'resized_data/validation'
 
 # Load datasets
 image_paths_train, labels_train, label_to_id_train = load_dataset(root_dir_train)
@@ -125,7 +125,9 @@ bovw_histograms_val = create_bovw_histograms(image_paths_val, sift, kmeans)
 X_train, y_train = bovw_histograms_train, labels_train
 X_test, y_test = bovw_histograms_test, labels_test
 X_val, y_val = bovw_histograms_val, labels_val
-
+print(X_train.shape, len(y_train))
+print(X_test.shape, len(y_test))
+print(X_val.shape, len(y_val))
 # Model creation and training
 clf = make_pipeline(StandardScaler(), SVC(kernel='linear', C=1))
 clf.fit(X_train, y_train)
