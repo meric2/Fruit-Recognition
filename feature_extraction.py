@@ -48,7 +48,6 @@ labels = []
 
 # Iterate over the subfolders in the resized_folder_path
 for folder_name in os.listdir(resized_folder_path):
-    print(folder_name)
     folder_path = os.path.join(resized_folder_path, folder_name)
     
     # Iterate over the images in each subfolder
