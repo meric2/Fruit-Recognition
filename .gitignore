@@ -1,2 +1,7 @@
 
 *.jpg
+*.pyc
+venv/Lib/site-packages/astunparse-1.6.3.dist-info/INSTALLER
+venv/Lib/site-packages/astunparse-1.6.3.dist-info/METADATA
+*.rar
+venv
