@@ -11,6 +11,7 @@ Extracted features are then used to train a Support Vector Machine (SVM) model f
 import cv2
 import numpy as np
 import os
+import random
 from sklearn.cluster import KMeans
 from sklearn.svm import SVC
 from sklearn.preprocessing import StandardScaler
@@ -19,6 +20,7 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, preci
 import matplotlib.pyplot as plt
 
 
+# Functions
 def extract_features(image_paths, extractor):
     features = []
     for path in image_paths:
@@ -58,40 +60,37 @@ def load_dataset(root_dir): # takes the folder name (class name) as label
     return image_paths, labels, label_to_id
 
 def model_evaluation(X, y, y_pred):
-    # Accuracy
-    accuracy = accuracy_score(y, y_pred)
-
     # Match Accuracy
-    match_accuracy = np.mean(y_pred == y)
-
-    # Matching Performance
-    matching_performance = np.sum(y_pred == y) / len(y)
+    match_accuracy = np.mean(y_pred == y) #accuracy_score(y, y_pred)
+    print('Match Accuracy:', match_accuracy)
 
     # Matching Precision and Recall
     precision = precision_score(y, y_pred, average='macro')
+    print('Precision:', precision)
     recall = recall_score(y, y_pred, average='macro')
+    print('Recall:', recall)
 
     # Feature Count
     feature_count = X.shape[1]
+    print('Feature Count:', feature_count)
 
     # Unique Match Ratio
     unique_match_ratio = len(np.unique(y_pred)) / len(np.unique(y))
+    print('Unique Match Ratio:', unique_match_ratio)
 
     # Precision-Recall Curve
     #precision_curve, recall_curve, _ = precision_recall_curve(y, y_pred)
 
     return {
-        'Accuracy': accuracy,
-        '\nMatch Accuracy': match_accuracy,
-        '\nMatching Performance': matching_performance,
-        '\nPrecision': precision,
-        '\nRecall': recall,
-        '\nFeature Count': feature_count,
-        '\nUnique Match Ratio': unique_match_ratio
+        'Match Accuracy': match_accuracy,
+        'Precision': precision,
+        'Recall': recall,
+        'Feature Count': feature_count,
+        'Unique Match Ratio': unique_match_ratio
         #'Precision-Recall Curve': (precision_curve, recall_curve)
     }
 
-def display_results(image_paths, predicted_labels, true_labels, label_to_id):
+"""def display_results(image_paths, predicted_labels, true_labels, label_to_id):
     num_images = len(image_paths)
     num_cols = 4
     num_rows = num_images // num_cols + (1 if num_images % num_cols != 0 else 0)
@@ -107,7 +106,69 @@ def display_results(image_paths, predicted_labels, true_labels, label_to_id):
         ax.set_title(f"Predicted: {label_to_id[predicted_labels[idx]]}, True: {label_to_id[true_labels[idx]]}")
         ax.axis('off')
     plt.tight_layout()
+    plt.show()"""
+
+def display_all_results(image_paths, predicted_labels, true_labels, label_to_id):
+    id_to_label = {v: k for k, v in label_to_id.items()}
+    num_images = len(image_paths)
+    num_cols = 4
+    num_rows = num_images // num_cols + (1 if num_images % num_cols != 0 else 0)
+
+    fig, axes = plt.subplots(num_rows, num_cols, figsize=(15, 5 * num_rows))
+    for idx, path in enumerate(image_paths):
+        row = idx // num_cols
+        col = idx % num_cols
+        ax = axes[row, col] if num_rows > 1 else axes[col]
+        image = cv2.imread(path)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        ax.imshow(image)
+        pred_label = id_to_label.get(predicted_labels[idx], "Unknown")
+        true_label = id_to_label.get(true_labels[idx], "Unknown")
+        result = "TRUE" if predicted_labels[idx] == true_labels[idx] else "FALSE"
+        ax.set_title(f"Predicted: {pred_label}, True: {true_label}\n{result}")
+        ax.axis('off')
+    plt.tight_layout()
     plt.show()
+
+def display_sample_results(image_paths, predicted_labels, true_labels, label_to_id, sample_size=10):
+    id_to_label = {v: k for k, v in label_to_id.items()}
+    # Ensure sample_size is not larger than the dataset size
+    sample_size = min(sample_size, len(image_paths))
+    
+    # Randomly sample indices without replacement
+    sampled_indices = random.sample(range(len(image_paths)), sample_size)
+    
+    # Subset the data
+    sampled_image_paths = [image_paths[i] for i in sampled_indices]
+    sampled_predicted_labels = [predicted_labels[i] for i in sampled_indices]
+    sampled_true_labels = [true_labels[i] for i in sampled_indices]
+    
+    # Calculate the layout for the subplot
+    num_cols = 4
+    num_rows = sample_size // num_cols + (1 if sample_size % num_cols != 0 else 0)
+    
+    fig, axes = plt.subplots(num_rows, num_cols, figsize=(15, 5 * num_rows), squeeze=False)
+    axes = axes.flatten()
+    
+    for idx, path in enumerate(sampled_image_paths):
+        ax = axes[idx]
+        image = cv2.imread(path)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        ax.imshow(image)
+        pred_label = id_to_label.get(sampled_predicted_labels[idx], "Unknown")
+        true_label = id_to_label.get(sampled_true_labels[idx], "Unknown")
+        result = "TRUE" if sampled_predicted_labels[idx] == sampled_true_labels[idx] else "FALSE"
+        ax.set_title(f"Predicted: {pred_label}, True: {true_label}\n{result}")
+        ax.axis('off')
+    
+    # Hide any unused subplot areas
+    for idx in range(len(sampled_image_paths), len(axes)):
+        axes[idx].axis('off')
+    
+    plt.tight_layout()
+    plt.show()
+
+
 
 # Parameters
 num_clusters = 100
@@ -140,23 +201,25 @@ X_val, y_val = bovw_histograms_val, labels_val
 clf = make_pipeline(StandardScaler(), SVC(kernel='linear', C=1))
 clf.fit(X_train, y_train)
 
+
 # Model evaluation on test set
 y_pred = clf.predict(X_test)
 print("Model Evaluation on Test Set")
 test_evaluation = model_evaluation(X_test, y_test, y_pred)
-print(test_evaluation)
 
 # Display results for the test set
-display_results(image_paths_test, y_pred, y_val, label_to_id_test)
+#display_all_results(image_paths_test, y_pred, y_test, label_to_id_test)
+display_sample_results(image_paths_test, y_pred, y_test, label_to_id_test)
+
 
 # Model evaluation on validation set
 y_pred_val = clf.predict(X_val)
 print("Model Evaluation on Validation Set")
 validation_evaluation = model_evaluation(X_val, y_val, y_pred_val)
-print(validation_evaluation)
 
 # Display results for the validation set
-display_results(image_paths_val, y_pred_val, y_val, label_to_id_val)
+#display_all_results(image_paths_val, y_pred_val, y_val, label_to_id_val)
+display_sample_results(image_paths_val, y_pred_val, y_val, label_to_id_val)
 
 
 """precision-recall curve for each class code
