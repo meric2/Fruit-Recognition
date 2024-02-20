@@ -58,8 +58,7 @@ def seam_carving(image, new_width, new_height):
 
 
 def resize_images_in_folder(input_folder, output_folder, new_width, new_height):
-    # Iterate through train, test, and validation folders
-    for root, _, _ in os.walk(input_folder):
+    for root, _, _ in os.walk(input_folder):# iterate through train, test, and validation folders
         for subdir in os.listdir(root):
             # Create corresponding output directory
             output_subdir = os.path.join(output_folder, os.path.relpath(root, input_folder), subdir)
@@ -75,7 +74,9 @@ def resize_images_in_folder(input_folder, output_folder, new_width, new_height):
                 # Save the resized image
                 cv2.imwrite(output_path, resized_image)
 
-# Example usage
+
+# Change the paths to the corresponding folders
+# Code handles a specific folder structure e.g. input_folder/class_name/image.jpg 
 input_folder = 'data/validation'
 output_folder = 'resized_data/validation'
 new_width = 32

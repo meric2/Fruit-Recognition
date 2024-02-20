@@ -1,3 +1,13 @@
+"""
+Yontem - 1
+Feature extraction using SIFT and Bag of Visual Words (BOVW) model
+Feature extraction is done by SIFT.
+Bag of Visual Words (BOVW) model is used to represent images as histograms of visual words.
+Extracted features are then used to train a Support Vector Machine (SVM) model for image classification.
+"""
+
+
+
 import cv2
 import numpy as np
 import os
@@ -25,12 +35,12 @@ def create_bovw_histograms(image_paths, extractor, kmeans):
         image = cv2.imread(path)
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         keypoints, descriptors = extractor.detectAndCompute(gray, None)
+        histogram = np.zeros(len(kmeans.cluster_centers_))  # Initialize histogram for each image
         if descriptors is not None:
-            histogram = np.zeros(len(kmeans.cluster_centers_))
             labels = kmeans.predict(descriptors)
             for label in labels:
                 histogram[label] += 1
-            histograms.append(histogram)
+        histograms.append(histogram)  # Append histogram regardless of descriptor availability
     return np.array(histograms)
 
 def load_dataset(root_dir): # takes the folder name (class name) as label
@@ -72,12 +82,12 @@ def model_evaluation(X, y, y_pred):
 
     return {
         'Accuracy': accuracy,
-        'Match Accuracy': match_accuracy,
-        'Matching Performance': matching_performance,
-        'Precision': precision,
-        'Recall': recall,
-        'Feature Count': feature_count,
-        'Unique Match Ratio': unique_match_ratio
+        '\nMatch Accuracy': match_accuracy,
+        '\nMatching Performance': matching_performance,
+        '\nPrecision': precision,
+        '\nRecall': recall,
+        '\nFeature Count': feature_count,
+        '\nUnique Match Ratio': unique_match_ratio
         #'Precision-Recall Curve': (precision_curve, recall_curve)
     }
 
@@ -125,9 +135,7 @@ bovw_histograms_val = create_bovw_histograms(image_paths_val, sift, kmeans)
 X_train, y_train = bovw_histograms_train, labels_train
 X_test, y_test = bovw_histograms_test, labels_test
 X_val, y_val = bovw_histograms_val, labels_val
-print(X_train.shape, len(y_train))
-print(X_test.shape, len(y_test))
-print(X_val.shape, len(y_val))
+
 # Model creation and training
 clf = make_pipeline(StandardScaler(), SVC(kernel='linear', C=1))
 clf.fit(X_train, y_train)
@@ -136,7 +144,7 @@ clf.fit(X_train, y_train)
 y_pred = clf.predict(X_test)
 print("Model Evaluation on Test Set")
 test_evaluation = model_evaluation(X_test, y_test, y_pred)
-print(test_evaluation = model_evaluation(X_test, y_test, y_pred))
+print(test_evaluation)
 
 # Display results for the test set
 display_results(image_paths_test, y_pred, y_val, label_to_id_test)
