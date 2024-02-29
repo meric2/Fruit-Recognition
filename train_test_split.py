@@ -3,7 +3,7 @@ import shutil
 import random
 
 # Define the path to your dataset
-dataset_path = "venv/fruit_dataset"
+dataset_path = "redimmed_d"
 
 # Define the ratio for train, test, validation split
 train_ratio = 0.7
@@ -11,9 +11,9 @@ test_ratio = 0.2
 validation_ratio = 0.1
 
 # Define the paths for train, test, validation folders
-train_path = "venv/train"
-test_path = "venv/test"
-validation_path = "venv/validation"
+train_path = "redimmed/train"
+test_path = "redimmed/test"
+validation_path = "redimmed/validation"
 
 # Create directories for train, test, validation splits
 os.makedirs(train_path, exist_ok=True)

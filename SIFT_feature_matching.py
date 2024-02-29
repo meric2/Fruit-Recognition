@@ -78,9 +78,6 @@ def model_evaluation(X, y, y_pred):
     unique_match_ratio = len(np.unique(y_pred)) / len(np.unique(y))
     print('Unique Match Ratio:', unique_match_ratio)
 
-    # Precision-Recall Curve
-    #precision_curve, recall_curve, _ = precision_recall_curve(y, y_pred)
-
     return {
         'Match Accuracy': match_accuracy,
         'Precision': precision,
@@ -89,24 +86,6 @@ def model_evaluation(X, y, y_pred):
         'Unique Match Ratio': unique_match_ratio
         #'Precision-Recall Curve': (precision_curve, recall_curve)
     }
-
-"""def display_results(image_paths, predicted_labels, true_labels, label_to_id):
-    num_images = len(image_paths)
-    num_cols = 4
-    num_rows = num_images // num_cols + (1 if num_images % num_cols != 0 else 0)
-    
-    fig, axes = plt.subplots(num_rows, num_cols, figsize=(15, 5*num_rows))
-    for idx, path in enumerate(image_paths):
-        row = idx // num_cols
-        col = idx % num_cols
-        ax = axes[row, col]
-        image = cv2.imread(path)
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        ax.imshow(image)
-        ax.set_title(f"Predicted: {label_to_id[predicted_labels[idx]]}, True: {label_to_id[true_labels[idx]]}")
-        ax.axis('off')
-    plt.tight_layout()
-    plt.show()"""
 
 def display_all_results(image_paths, predicted_labels, true_labels, label_to_id):
     id_to_label = {v: k for k, v in label_to_id.items()}
@@ -198,9 +177,8 @@ X_test, y_test = bovw_histograms_test, labels_test
 X_val, y_val = bovw_histograms_val, labels_val
 
 # Model creation and training
-clf = make_pipeline(StandardScaler(), SVC(kernel='linear', C=1))
+clf = make_pipeline(StandardScaler(), SVC())
 clf.fit(X_train, y_train)
-
 
 # Model evaluation on test set
 y_pred = clf.predict(X_test)
@@ -220,32 +198,3 @@ validation_evaluation = model_evaluation(X_val, y_val, y_pred_val)
 # Display results for the validation set
 #display_all_results(image_paths_val, y_pred_val, y_val, label_to_id_val)
 display_sample_results(image_paths_val, y_pred_val, y_val, label_to_id_val)
-
-
-"""precision-recall curve for each class code
-from sklearn.metrics import precision_recall_curve
-from sklearn.preprocessing import label_binarize
-from sklearn.metrics import average_precision_score
-
-# Convert labels to binary format
-y_val_bin = label_binarize(y_val, classes=np.unique(y_val))
-
-# Compute precision and recall for each class
-precision = dict()
-recall = dict()
-average_precision = dict()
-for i in range(len(np.unique(y_val))):
-    precision[i], recall[i], _ = precision_recall_curve(y_val_bin[:, i], y_pred_val[:, i])
-    average_precision[i] = average_precision_score(y_val_bin[:, i], y_pred_val[:, i])
-
-# Plot precision-recall curve for each class
-plt.figure(figsize=(8, 6))
-for i in range(len(np.unique(y_val))):
-    plt.plot(recall[i], precision[i], lw=2, label='Class {}'.format(i))
-
-plt.xlabel('Recall')
-plt.ylabel('Precision')
-plt.title('Precision-Recall Curve')
-plt.legend(loc="best")
-plt.show()
-"""
