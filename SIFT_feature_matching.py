@@ -176,8 +176,8 @@ X_train, y_train = bovw_histograms_train, labels_train
 X_test, y_test = bovw_histograms_test, labels_test
 X_val, y_val = bovw_histograms_val, labels_val
 
-# Model creation and training
-clf = make_pipeline(StandardScaler(), SVC())
+# Model creation and training # Hyperparameter tuning for SVC is done on yontem1.ipynb
+clf = make_pipeline(StandardScaler(), SVC(svc__C=10, svc__gamma='scale', svc__kernel='rbf'))
 clf.fit(X_train, y_train)
 
 # Model evaluation on test set
