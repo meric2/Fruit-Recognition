@@ -145,9 +145,9 @@ def display_sample_results(image_paths, predicted_labels, true_labels, label_to_
 
 # Parameters
 num_clusters = 30
-root_dir_train = 'data_64x64/train'
-root_dir_test = 'data_64x64/test'
-root_dir_val = 'data_64x64/validation'
+root_dir_train = 'data_128x128/train'
+root_dir_test = 'data_128x128/test'
+root_dir_val = 'data_128x128/validation'
 
 # Load datasets
 image_paths_train, labels_train, label_to_id_train = load_dataset(root_dir_train)

@@ -107,8 +107,8 @@ def walk_images_in_folder(input_folder, output_folder, new_width, new_height):
 # Change the paths to the corresponding folders
 # Code handles a specific folder structure e.g. input_folder/class_name/image.jpg 
 input_folder = 'redimmed/validation'
-output_folder = 'redimmed_64x64/validation'
-new_width = 64
-new_height = 64
+output_folder = 'data_128x128/validation'
+new_width = 128
+new_height = 128
 
 walk_images_in_folder(input_folder, output_folder, new_width, new_height)

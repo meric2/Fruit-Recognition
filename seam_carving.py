@@ -77,9 +77,9 @@ def resize_images_in_folder(input_folder, output_folder, new_width, new_height):
 
 # Change the paths to the corresponding folders
 # Code handles a specific folder structure e.g. input_folder/class_name/image.jpg 
-input_folder = 'redimmed_64x64/train'
-output_folder = 'redimmed_64x64/train'
-new_width = 64
-new_height = 64
+input_folder = 'redimmed/test'
+output_folder = 'data_128x128/test'
+new_width = 128
+new_height = 128
 
 resize_images_in_folder(input_folder, output_folder, new_width, new_height)
