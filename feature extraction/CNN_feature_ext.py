@@ -26,8 +26,17 @@ def cnn_feature_extraction(resized_folder_path):
 
     # Save features to a compressed CSV file
     df = pd.DataFrame(CNN_features)
-    df.to_csv("CNN_features.csv.gz", compression="gzip")
+    df.to_csv(resized_folder_path + "_CNN_features.csv.gz", compression="gzip")
 
 # Call the function with the path to your resized images folder
-resized_folder_path = "venv/resized"
+resized_folder_path = "train"
 cnn_feature_extraction(resized_folder_path)
+print("CNN features extracted for training images")
+resized_folder_path = "test"
+cnn_feature_extraction(resized_folder_path)
+print("CNN features extracted for test images")
+resized_folder_path = "validation"
+cnn_feature_extraction(resized_folder_path)
+print("CNN features extracted for validation images")
+
+
