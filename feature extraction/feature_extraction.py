@@ -1,25 +1,51 @@
 import os
 import cv2
 import numpy as np
-import mahotas as mh
+from tqdm import tqdm
 
-def calculate_color_histogram(image):
-    hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-    hist = cv2.calcHist([hsv_image], [0, 1, 2], None, [8, 8, 8], [0, 256, 0, 256, 0, 256])
-    hist = cv2.normalize(hist, hist).flatten()
+
+def get_lbp_image(gray_image):
+    lbp_image = np.zeros_like(gray_image)
+    neigh = np.array([[1, 1, 1], [1, -8, 1], [1, 1, 1]])
+
+    for i in range(0, gray_image.shape[0] - 2):
+        for j in range(0, gray_image.shape[1] - 2):
+            window = gray_image[i : i + 3, j : j + 3]
+            lbp_image[i + 1, j + 1] = np.sum(window * neigh >= 0)
+
+    return lbp_image
+
+
+def calculate_lbp_histogram(image):
+    gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    lbp_image = get_lbp_image(gray_image)
+    # Compute the histogram with fewer bins to reduce dimensionality
+    hist, _ = np.histogram(lbp_image.ravel(), bins=64, range=(0, 256))
+    hist = hist.astype("float")
+    hist /= hist.sum() + 1e-7  # Normalize the histogram
 
     return hist
 
+
 def calculate_texture_features(image):
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    features = mh.features.haralick(gray_image).mean(axis=0)
 
-    return features
+    # Calculate LBP features using get_lbp_image
+    lbp_image = get_lbp_image(gray_image)
+
+    # Extract statistical features from LBP (e.g., mean, variance)
+    mean_lbp = np.mean(lbp_image)
+    var_lbp = np.var(lbp_image)
+
+    feature_vector = [mean_lbp, var_lbp]
+    return feature_vector
 
 
 def calculate_dominant_color(image):
     hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-    hist = cv2.calcHist([hsv_image], [0, 1, 2], None, [8, 8, 8], [0, 256, 0, 256, 0, 256])
+    hist = cv2.calcHist(
+        [hsv_image], [0, 1, 2], None, [8, 8, 8], [0, 256, 0, 256, 0, 256]
+    )
     color = np.unravel_index(hist.argmax(), hist.shape)
     return color
 
@@ -31,16 +57,16 @@ def feature_extraction(folder):
     labels = []
 
     # Iterate over the subfolders in the folder
-    for folder_name in os.listdir(folder):
+    for folder_name in tqdm(os.listdir(folder)):
         folder_path = os.path.join(folder, folder_name)
-        
+
         # Iterate over the images in each subfolder
-        for image_name in os.listdir(folder_path):
+        for image_name in tqdm(os.listdir(folder_path)):
             image_path = os.path.join(folder_path, image_name)
             image = cv2.imread(image_path)
-            
+
             features = calculate_texture_features(image)
-            histogram = calculate_color_histogram(image)
+            histogram = calculate_lbp_histogram(image)
             color = calculate_dominant_color(image)
 
             texture_features.append(features)
@@ -52,16 +78,10 @@ def feature_extraction(folder):
     histograms = np.array(histograms)
     texture_features = np.array(texture_features)
     dominant_colors = np.array(dominant_colors)
-    np.savetxt(folder+"_texture_features.csv", texture_features, delimiter=",")
-    np.savetxt(folder+"_histograms.csv", histograms, delimiter=",")
-    np.savetxt(folder+"_dominant_colors.csv", dominant_colors, delimiter=",")
-    np.savetxt(folder+"_labels.csv", labels, delimiter=",", fmt="%s")
-
-feature_extraction("train")
-print("Features extracted for training images")
-feature_extraction("test")
-print("Features extracted for test images")
-feature_extraction("validation")
+    np.savetxt(folder + "_texture_features.csv", texture_features, delimiter=",")
+    np.savetxt(folder + "_histograms.csv", histograms, delimiter=",")
+    np.savetxt(folder + "_dominant_colors.csv", dominant_colors, delimiter=",")
+    np.savetxt(folder + "_labels.csv", labels, delimiter=",", fmt="%s")
 
 
-
+feature_extraction("data")
