@@ -2,6 +2,7 @@ import os
 import cv2
 import numpy as np
 from tqdm import tqdm
+import pandas as pd
 
 
 def get_lbp_image(gray_image):
@@ -74,14 +75,15 @@ def feature_extraction(folder):
             dominant_colors.append(color)
             labels.append(folder_name)
 
-    # Convert the lists to NumPy arrays
-    histograms = np.array(histograms)
-    texture_features = np.array(texture_features)
-    dominant_colors = np.array(dominant_colors)
-    np.savetxt(folder + "_texture_features.csv", texture_features, delimiter=",")
-    np.savetxt(folder + "_histograms.csv", histograms, delimiter=",")
-    np.savetxt(folder + "_dominant_colors.csv", dominant_colors, delimiter=",")
-    np.savetxt(folder + "_labels.csv", labels, delimiter=",", fmt="%s")
+    texture_df = pd.DataFrame(texture_features, columns=["mean_lbp", "var_lbp"])
+    histogram_df = pd.DataFrame(histograms)
+    color_df = pd.DataFrame(dominant_colors, columns=["H", "S", "V"])
+    label_df = pd.DataFrame(labels, columns=["label"])
+
+    texture_df.to_csv("texture_features.csv", index=False)
+    histogram_df.to_csv("histograms.csv", index=False)
+    color_df.to_csv("dominant_colors.csv", index=False)
+    label_df.to_csv("labels.csv", index=False)
 
 
 feature_extraction("data")

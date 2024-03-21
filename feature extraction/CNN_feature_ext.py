@@ -16,7 +16,7 @@ def cnn_feature_extraction(resized_folder_path):
 
     CNN_features = []
     for root, dirs, files in tqdm(os.walk(resized_folder_path)):
-        for file in tqdm(files):
+        for file in files:
             if file.lower().endswith(
                 (".png", ".jpg", ".jpeg")
             ):  # Check for image files
@@ -30,14 +30,13 @@ def cnn_feature_extraction(resized_folder_path):
                 # Determine the center of the feature map
                 center_x, center_y = features.shape[1] // 2, features.shape[2] // 2
 
-                # Calculate the start and end points for slicing the 8x8 region
-                start_x = max(center_x - 4, 0)
-                start_y = max(center_y - 4, 0)
-                end_x = min(center_x + 4, features.shape[1])
-                end_y = min(center_y + 4, features.shape[2])
+                start_x = max(center_x - 15, 0)
+                start_y = max(center_y - 15, 0)
+                end_x = min(center_x + 15, features.shape[1])
+                end_y = min(center_y + 15, features.shape[2])
 
                 mid_region_features = features[
-                    0, start_x:end_x, start_y:end_y, :
+                    0, start_x:end_x, start_y:end_y, :5  # Select the first 5 channels
                 ].reshape(
                     -1
                 )  # Flatten the region
