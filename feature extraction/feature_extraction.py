@@ -187,5 +187,5 @@ def folder_feature_extraction(folder):
     batch_df.to_csv("batch_features.csv", index=False)
 
 
-# feature_extraction("data")
+feature_extraction("data") 
 folder_feature_extraction("cocoa bean")
