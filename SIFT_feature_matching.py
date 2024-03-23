@@ -18,9 +18,11 @@ from sklearn.metrics import (
     accuracy_score,
     precision_score,
     recall_score,
-    precision_recall_curve,
+    confusion_matrix,
+    f1_score
 )
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 
 # Functions
@@ -78,6 +80,10 @@ def model_evaluation(X, y, y_pred):
     recall = recall_score(y, y_pred, average="macro")
     print("Recall:", recall)
 
+    # F1 Score
+    f1 = f1_score(y, y_pred, average="macro")
+    print("F1 Score:", f1)
+
     # Feature Count
     feature_count = X.shape[1]
     print("Feature Count:", feature_count)
@@ -86,12 +92,24 @@ def model_evaluation(X, y, y_pred):
     unique_match_ratio = len(np.unique(y_pred)) / len(np.unique(y))
     print("Unique Match Ratio:", unique_match_ratio)
 
+    # Confusion Matrix
+    cm = confusion_matrix(y, y_pred)
+    print("Confusion Matrix:\n", cm)
+    plt.figure(figsize=(10, 7)) # Adjust the size as needed
+    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", cbar=False)
+    plt.xlabel('Predicted Labels')
+    plt.ylabel('True Labels')
+    plt.title('Confusion Matrix')
+    plt.show()
+
     return {
         "Match Accuracy": match_accuracy,
         "Precision": precision,
         "Recall": recall,
+        "F1 Score": f1,
         "Feature Count": feature_count,
         "Unique Match Ratio": unique_match_ratio,
+        "Confusion Matrix": cm
     }
 
 
