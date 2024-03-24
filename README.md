@@ -20,7 +20,7 @@ The key aspects of this project includes three main methods with different model
 
 - Clone the repository
   ```bash
-  git clone https://github.com/meric2/Chess-Game-Analysis/tree/main
+  git clone https://github.com/meric2/Fruit-Recognition.git
   ```
 
 - Install dependencies
