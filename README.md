@@ -1,7 +1,5 @@
 # Fruit Recognition
 
-# Chess Game Outcome Prediction using Apache Spark
-
 This project performs different classification models on fruits-360 and fruits-262 datasets.
 
 ## Project Overview
