@@ -42,7 +42,7 @@ Method 1:
 Method 2:  
 
 - Redundancies were deleted so that each folder had an equal number of images (500). 
-- Go to folder `Classification with Features` (cd Classification with Features)
+- Go to folder `Classification with Features` (cd '.\Classification with Features\')
 - Run train.ipynb to train and test. Dataframe operations were performed in the starting cells. Model training was done in the next   
   cells. The results method was written to show the results of model.
 - For testing, only the .pkl file of the two models was created and the test process was shown at the end of train.ipynb.
