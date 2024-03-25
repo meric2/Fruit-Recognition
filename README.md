@@ -20,10 +20,14 @@ The key aspects of this project includes three main methods with different model
 
 - Clone the repository
   ```bash
-  git clone https://github.com/meric2/Fruit-Recognition.git
+  git clone https://github.com/meric2/Fruit-Recognition
   ```
 
-- Install dependencies
+- Install dependencies for each method seperately  
+  ```bash
+  cd folder/of/method
+  ```  
+
   ```bash
   pip install -r requirements.txt
   ```  
@@ -32,8 +36,12 @@ The key aspects of this project includes three main methods with different model
 
 Method 1:  
 
+- Dataset is reduced and splitted by `data_reduction.py` and `train_test_split`.  
+- Images are resized by `seam_carving.py` and `crop_center.py`.  
+- Go to folder `SIFT feature matching` (cd SIFT feature matching)  
 - Run `SIFT_feature_matching.py`to train and test BoVW.  
-- To find optimized parameters for SIFT and SVC run `y1_parameter_optimization.ipynb` notebook.  
+- To only test the models run `test.py`. pkl files are provided.  
+- To find optimized parameters for SIFT and SVC, run `y1_parameter_optimization.ipynb` notebook.  
 
 Method 2:  
 

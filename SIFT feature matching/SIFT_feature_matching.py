@@ -23,6 +23,7 @@ from sklearn.metrics import (
 )
 import matplotlib.pyplot as plt
 import seaborn as sns
+import joblib
 
 
 # Functions
@@ -230,3 +231,8 @@ validation_evaluation = model_evaluation(X_val, y_val, y_pred_val)
 # Display results for the validation set
 # display_all_results(image_paths_val, y_pred_val, y_val, label_to_id_val)
 display_sample_results(image_paths_val, y_pred_val, y_val, label_to_id_val)
+
+
+#save models
+joblib.dump(kmeans, 'kmeans.pkl')
+joblib.dump(clf, 'svc_w_sift.pkl')
