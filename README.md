@@ -7,7 +7,7 @@ This project performs different classification models on fruits-360 and fruits-2
 The key aspects of this project includes three main methods with different models:
 
 - Bag of Visual Words (BoVW)  
-- Machine Learning with feature extraction from image?  
+- Machine Learning with feature extraction from image
 - Convolutional Neural Network (CNN)  
 
 ## Getting Started  
