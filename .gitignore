@@ -6,6 +6,7 @@ venv/Lib/site-packages/astunparse-1.6.3.dist-info/METADATA
 *.rar
 venv
 *.zip
+*.h5
 *.csv
 *.gz
 *.csv

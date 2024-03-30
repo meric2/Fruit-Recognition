@@ -1,73 +1,126 @@
-"""
-https://medium.com/@sidathasiri/building-a-convolutional-neural-network-for-image-classification-with-tensorflow-f1f2f56bd83b
-"""
-
 import os
 
 base_dir = ""
 
-
 train_dir = os.path.join(base_dir, "train")
 test_dir = os.path.join(base_dir, "test")
-valid_dir = os.path.join(base_dir, "valid")
+valid_dir = os.path.join(base_dir, "validation")
+
+class_names = os.listdir(train_dir)
 
 num_of_classes = len([subdir for subdir in os.listdir(train_dir)])
 
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.image import resize_with_crop_or_pad
+import tensorflow as tf
 
-train_datagen = ImageDataGenerator(rescale=1.0 / 255.0)
-test_datagen = ImageDataGenerator(rescale=1.0 / 255.0)
-validation_datagen = ImageDataGenerator(rescale=1.0 / 255.0)
+
+def crop_to_target_size(image):
+    # TensorFlow'un resize_with_crop_or_pad fonksiyonu, hedef boyutu geçtiğinde kırpma, eksik olduğunda doldurma yapar.
+    # Burada, resmi her zaman hedef boyuta kırpıyoruz.
+    return resize_with_crop_or_pad(image, target_height=300, target_width=300)
+
+
+# ImageDataGenerator nesnelerini güncelleme
+train_datagen = ImageDataGenerator(
+    rescale=1.0 / 255.0,
+    preprocessing_function=crop_to_target_size,
+    rotation_range=20,
+    width_shift_range=0.2,
+    height_shift_range=0.2,
+    shear_range=0.2,
+    zoom_range=0.2,
+    horizontal_flip=True,
+    fill_mode="nearest",
+)
+
+test_datagen = ImageDataGenerator(
+    rescale=1.0 / 255.0,
+    preprocessing_function=crop_to_target_size,
+)
+
+validation_datagen = ImageDataGenerator(
+    rescale=1.0 / 255.0,
+    preprocessing_function=crop_to_target_size,
+)
 
 
 train_generator = train_datagen.flow_from_directory(
-    train_dir, target_size=(224, 224), batch_size=30, class_mode="categorical"
+    train_dir,
+    target_size=(300, 300),
+    batch_size=50,
+    class_mode="categorical",
+    shuffle=True,
 )
 
-validatation_generator = validation_datagen.flow_from_directory(
-    valid_dir, target_size=(224, 224), batch_size=20, class_mode="categorical"
+test_generator = test_datagen.flow_from_directory(
+    test_dir, target_size=(300, 300), batch_size=50, class_mode="categorical"
+)
+
+validation_generator = validation_datagen.flow_from_directory(
+    test_dir, target_size=(300, 300), batch_size=50, class_mode="categorical"
 )
 
 # Construct the model
 import tensorflow as tf
-from tensorflow.keras import layers
-from tensorflow.keras import models
+from tensorflow.keras import models, layers
 
 model = tf.keras.models.Sequential(
     [
         tf.keras.layers.Conv2D(
-            16, (3, 3), activation="relu", input_shape=(224, 224, 3)
+            32, (3, 3), activation="relu", input_shape=(300, 300, 3)
         ),
-        tf.keras.layers.Conv2D(16, (3, 3), activation="relu"),
-        tf.keras.layers.MaxPooling2D(2, 2),
-        tf.keras.layers.Conv2D(32, (3, 3), activation="relu"),
-        tf.keras.layers.Conv2D(32, (3, 3), activation="relu"),
-        tf.keras.layers.MaxPooling2D(2, 2),
-        tf.keras.layers.Conv2D(64, (3, 3), activation="relu"),
-        tf.keras.layers.MaxPooling2D(2, 2),
-        tf.keras.layers.Conv2D(128, (3, 3), activation="relu"),
-        tf.keras.layers.MaxPooling2D(2, 2),
-        tf.keras.layers.Flatten(),
-        tf.keras.layers.Dense(1024, activation="relu"),
-        tf.keras.layers.Dense(512, activation="relu"),
-        tf.keras.layers.Dense(num_of_classes, activation="softmax"),
+        layers.MaxPooling2D(2, 2),
+        layers.Conv2D(64, (3, 3), activation="relu"),
+        layers.MaxPooling2D(2, 2),
+        layers.Conv2D(128, (3, 3), activation="relu"),
+        layers.MaxPooling2D(2, 2),
+        layers.Flatten(),
+        layers.Dense(512, activation="relu"),
+        layers.Dense(num_of_classes, activation="softmax"),
     ]
 )
 
 
-from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.optimizers import RMSprop, Adam, SGD
+
+optimizer = SGD(learning_rate=0.001, momentum=0.9)
 
 model.compile(
     loss="categorical_crossentropy",
-    optimizer=Adam(lr=0.001),
+    optimizer=optimizer,
     metrics=["accuracy"],
 )
 
 history = model.fit(
     train_generator,
-    steps_per_epoch=180,
-    epochs=20,
-    validation_data=validatation_generator,
+    steps_per_epoch=100,
+    epochs=5,
+    validation_data=test_generator,
     validation_steps=50,
     verbose=1,
 )
+
+
+model.save("model.h5")
+
+import matplotlib.pyplot as plt
+
+# Assuming 'history' is the variable containing the training history
+accuracy = history.history["accuracy"]
+val_accuracy = history.history["val_accuracy"]
+loss = history.history["loss"]
+val_loss = history.history["val_loss"]
+epochs = range(1, len(accuracy) + 1)
+
+# Plotting training & validation accuracy
+# Adjusted plotting to handle unequal length arrays
+min_epochs = min(len(epochs), len(val_accuracy))  # Find the minimum length
+plt.plot(epochs[:min_epochs], accuracy[:min_epochs], "bo", label="Training Accuracy")
+plt.plot(
+    epochs[:min_epochs], val_accuracy[:min_epochs], "b", label="Validation Accuracy"
+)
+plt.title("Training and Validation Accuracy")
+plt.legend()
+
+plt.savefig("training_validation_accuracy.png")
