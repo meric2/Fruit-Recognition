@@ -18,7 +18,7 @@ import tensorflow as tf
 def crop_to_target_size(image):
     # TensorFlow'un resize_with_crop_or_pad fonksiyonu, hedef boyutu geçtiğinde kırpma, eksik olduğunda doldurma yapar.
     # Burada, resmi her zaman hedef boyuta kırpıyoruz.
-    return resize_with_crop_or_pad(image, target_height=300, target_width=300)
+    return resize_with_crop_or_pad(image, target_height=128, target_width=128)
 
 
 # ImageDataGenerator nesnelerini güncelleme
@@ -47,18 +47,18 @@ validation_datagen = ImageDataGenerator(
 
 train_generator = train_datagen.flow_from_directory(
     train_dir,
-    target_size=(300, 300),
+    target_size=(128, 128),
     batch_size=50,
     class_mode="categorical",
     shuffle=True,
 )
 
 test_generator = test_datagen.flow_from_directory(
-    test_dir, target_size=(300, 300), batch_size=50, class_mode="categorical"
+    test_dir, target_size=(128, 128), batch_size=50, class_mode="categorical"
 )
 
 validation_generator = validation_datagen.flow_from_directory(
-    test_dir, target_size=(300, 300), batch_size=50, class_mode="categorical"
+    test_dir, target_size=(128, 128), batch_size=50, class_mode="categorical"
 )
 
 # Construct the model
@@ -68,7 +68,7 @@ from tensorflow.keras import models, layers
 model = tf.keras.models.Sequential(
     [
         tf.keras.layers.Conv2D(
-            32, (3, 3), activation="relu", input_shape=(300, 300, 3)
+            32, (3, 3), activation="relu", input_shape=(128, 128, 3)
         ),
         layers.MaxPooling2D(2, 2),
         layers.Conv2D(64, (3, 3), activation="relu"),
@@ -94,15 +94,24 @@ model.compile(
 
 history = model.fit(
     train_generator,
-    steps_per_epoch=100,
-    epochs=5,
+    steps_per_epoch=150,
+    epochs=128,
     validation_data=test_generator,
     validation_steps=50,
     verbose=1,
 )
 
 
-model.save("model.h5")
+model.save("CNN_model.h5")
+
+# save CNN architecture as text file
+with open("CNN_model_architecture.txt", "w") as f:
+    model.summary(print_fn=lambda x: f.write(x + "\n"))
+
+# save layers as text file
+with open("CNN_model_layers.txt", "w") as f:
+    for layer in model.layers:
+        f.write(str(layer) + "\n")
 
 import matplotlib.pyplot as plt
 
