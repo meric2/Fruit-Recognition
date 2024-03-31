@@ -94,10 +94,10 @@ model.compile(
 
 history = model.fit(
     train_generator,
-    steps_per_epoch=150,
-    epochs=128,
+    steps_per_epoch=120,
+    epochs=200,
     validation_data=test_generator,
-    validation_steps=50,
+    validation_steps=30,
     verbose=1,
 )
 

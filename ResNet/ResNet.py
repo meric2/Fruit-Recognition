@@ -75,7 +75,9 @@ global_average_layer = tf.keras.layers.GlobalAveragePooling2D()
 feature_batch_average = global_average_layer(feature_batch)
 print(feature_batch_average.shape)
 
-prediction_layer = tf.keras.layers.Dense(1)
+num_of_classes = len(class_names)
+
+prediction_layer = tf.keras.layers.Dense(num_of_classes, activation="softmax")
 prediction_batch = prediction_layer(feature_batch_average)
 print(prediction_batch.shape)
 
@@ -91,7 +93,7 @@ model = tf.keras.Model(inputs, outputs)
 base_learning_rate = 0.0001
 model.compile(
     optimizer=tf.keras.optimizers.Adam(learning_rate=base_learning_rate),
-    loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
+    loss=tf.keras.losses.CategoricalCrossentropy(from_logits=True),
     metrics=["accuracy"],
 )
 
@@ -101,16 +103,17 @@ len(model.trainable_variables)
 
 # Train the model
 
-initial_epochs = 10
+initial_epochs = 20
+
+history = model.fit(
+    train_dataset, epochs=initial_epochs, validation_data=validation_dataset
+)
 
 loss0, accuracy0 = model.evaluate(validation_dataset)
 
 print("initial loss: {:.2f}".format(loss0))
 print("initial accuracy: {:.2f}".format(accuracy0))
 
-history = model.fit(
-    train_dataset, epochs=initial_epochs, validation_data=validation_dataset
-)
 
 # Learning curves
 
