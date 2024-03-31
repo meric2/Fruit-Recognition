@@ -105,8 +105,24 @@ len(model.trainable_variables)
 
 initial_epochs = 20
 
-history = model.fit(
-    train_dataset, epochs=initial_epochs, validation_data=validation_dataset
+
+class myCallback(tf.keras.callbacks.Callback):
+    def on_epoch_end(self, epoch, logs={}):
+        if logs.get("accuracy") > 0.95:
+            print("\nReached 95% accuracy so cancelling training!")
+            self.model.stop_training = True
+
+
+callbacks = myCallback()
+
+history = model.fit_generator(
+    train_dataset,
+    epochs=initial_epochs,
+    validation_data=validation_dataset,
+    callbacks=[callbacks],
+    verbose=2,
+    steps_per_epoch=100,
+    validation_steps=20,
 )
 
 loss0, accuracy0 = model.evaluate(validation_dataset)
