@@ -52,13 +52,29 @@ Y_pred = model.predict(test_generator)
 y_pred = np.argmax(Y_pred, axis=1)
 
 # show confusion matrix in a separate window
+import numpy as np
 import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.metrics import confusion_matrix
 
+# Assuming 'y_pred' and 'test_generator.classes' are already defined
 confusion_mtx = confusion_matrix(test_generator.classes, y_pred)
+
+# Create a heatmap for the confusion matrix
 plt.figure(figsize=(10, 8))
-sns.heatmap(confusion_mtx, annot=True, fmt="d")
-plt.xlabel("Prediction")
-plt.ylabel("Label")
+sns.heatmap(
+    confusion_mtx,
+    annot=True,
+    fmt="d",
+    cmap="Blues",
+    xticklabels=class_names,
+    yticklabels=class_names,
+)
+
+# Adding labels and title
+plt.xlabel("Predicted Label")
+plt.ylabel("True Label")
 plt.title("Confusion Matrix")
-plt.show()
 plt.savefig("confusion_matrix.png")
+# Show the plot
+plt.show()

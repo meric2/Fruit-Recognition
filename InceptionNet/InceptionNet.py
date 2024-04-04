@@ -44,11 +44,8 @@ from tensorflow.keras import layers
 
 # Flatten the output layer to 1 dimension
 x = layers.Flatten()(base_model.output)
-# Add a fully connected layer with 1,024 hidden units and ReLU activation
 x = layers.Dense(1024, activation="relu")(x)
-# Add a dropout rate of 0.2
-x = layers.Dropout(0.2)(x)
-# Add a final sigmoid layer for classification
+x = layers.Dropout(0.20)(x)
 x = layers.Dense(num_classes, activation="softmax")(x)
 
 model = tf.keras.models.Model(base_model.input, x)
@@ -84,8 +81,8 @@ validation_generator = validation_datagen.flow_from_directory(
 
 class myCallback(tf.keras.callbacks.Callback):
     def on_epoch_end(self, epoch, logs={}):
-        if logs.get("accuracy") > 0.95:
-            print("\nReached 95% accuracy so cancelling training!")
+        if logs.get("accuracy") > 0.90:
+            print("\nReached 90% accuracy so cancelling training!")
             self.model.stop_training = True
 
 
@@ -94,10 +91,10 @@ callbacks = myCallback()
 history = model.fit_generator(
     train_generator,
     validation_data=validation_generator,
-    steps_per_epoch=100,
-    epochs=100,
-    validation_steps=50,
-    verbose=2,
+    steps_per_epoch=200,
+    epochs=200,
+    validation_steps=40,
+    verbose=1,
     callbacks=[callbacks],
 )
 
@@ -116,13 +113,6 @@ plt.title("Training and validation accuracy")
 plt.legend()
 plt.figure()
 
-plt.plot(epochs, loss, "r", label="Training Loss")
-plt.plot(epochs, val_loss, "b", label="Validation Loss")
-plt.title("Training and validation loss")
-plt.legend()
-
 plt.show()
-
-plt.savefig("InceptionNet.png")
 
 model.save("inceptionNet.h5")

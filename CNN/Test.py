@@ -58,9 +58,17 @@ import seaborn as sns
 
 cm = confusion_matrix(y_true, y_pred)
 plt.figure(figsize=(10, 10))
-sns.heatmap(cm, annot=True, fmt="d", xticklabels=class_names, yticklabels=class_names)
+sns.heatmap(
+    cm,
+    annot=True,
+    fmt="d",
+    xticklabels=class_names,
+    yticklabels=class_names,
+    cmap="Blues",
+)
 plt.xlabel("Predicted")
 plt.ylabel("Actual")
 plt.title("Confusion Matrix")
+plt.savefig("confusion_matrix.png")
 
 plt.show()
