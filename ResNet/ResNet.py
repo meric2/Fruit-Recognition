@@ -7,7 +7,6 @@ import tensorflow as tf
 
 
 train_dir = "train"
-test_dir = "test"
 validation_dir = "valid"
 
 batch_size = 32
@@ -29,13 +28,6 @@ validation_dateset = tf.keras.utils.image_dataset_from_directory(
     label_mode="categorical",
 )
 
-test_dataset = tf.keras.utils.image_dataset_from_directory(
-    test_dir,
-    shuffle=True,
-    batch_size=batch_size,
-    image_size=IMG_SIZE,
-    label_mode="categorical",
-)
 
 class_names = train_dataset.class_names
 
@@ -43,7 +35,6 @@ AUTOTUNE = tf.data.AUTOTUNE
 
 train_dataset = train_dataset.prefetch(buffer_size=AUTOTUNE)
 validation_dataset = validation_dateset.prefetch(buffer_size=AUTOTUNE)
-test_dataset = test_dataset.prefetch(buffer_size=AUTOTUNE)
 
 data_augmentation = tf.keras.Sequential(
     [
@@ -86,9 +77,18 @@ x = data_augmentation(inputs)
 x = preprocess_input(x)
 x = base_model(x, training=False)
 x = global_average_layer(x)
-x = tf.keras.layers.Dropout(0.2)(x)
+x = tf.keras.layers.Dropout(0.15)(x)
 outputs = prediction_layer(x)
 model = tf.keras.Model(inputs, outputs)
+
+print(
+    "Number of training batches: %d" % tf.data.experimental.cardinality(train_dataset)
+)
+print(
+    "Number of validation batches: %d"
+    % tf.data.experimental.cardinality(validation_dataset)
+)
+
 
 base_learning_rate = 0.0001
 model.compile(
@@ -101,15 +101,13 @@ model.summary()
 
 len(model.trainable_variables)
 
-# Train the model
-
 initial_epochs = 20
 
 
 class myCallback(tf.keras.callbacks.Callback):
     def on_epoch_end(self, epoch, logs={}):
-        if logs.get("accuracy") > 0.95:
-            print("\nReached 95% accuracy so cancelling training!")
+        if logs.get("accuracy") > 0.90:
+            print("\nReached 90% accuracy so cancelling training!")
             self.model.stop_training = True
 
 
@@ -117,11 +115,11 @@ callbacks = myCallback()
 
 history = model.fit_generator(
     train_dataset,
-    epochs=initial_epochs,
+    epochs=40,
     validation_data=validation_dataset,
     callbacks=[callbacks],
-    verbose=2,
-    steps_per_epoch=100,
+    verbose=1,
+    steps_per_epoch=len(train_dataset) // batch_size,
     validation_steps=20,
 )
 
@@ -129,38 +127,5 @@ loss0, accuracy0 = model.evaluate(validation_dataset)
 
 print("initial loss: {:.2f}".format(loss0))
 print("initial accuracy: {:.2f}".format(accuracy0))
-
-
-# Learning curves
-
-acc = history.history["accuracy"]
-val_acc = history.history["val_accuracy"]
-
-loss = history.history["loss"]
-val_loss = history.history["val_loss"]
-
-plt.figure(figsize=(8, 8))
-plt.subplot(2, 1, 1)
-plt.plot(acc, label="Training Accuracy")
-plt.plot(val_acc, label="Validation Accuracy")
-plt.legend(loc="lower right")
-plt.ylabel("Accuracy")
-plt.ylim([min(plt.ylim()), 1])
-plt.title("Training and Validation Accuracy")
-
-plt.subplot(2, 1, 2)
-plt.plot(loss, label="Training Loss")
-plt.plot(val_loss, label="Validation Loss")
-plt.legend(loc="upper right")
-plt.ylabel("Cross Entropy")
-plt.ylim([0, 1.0])
-plt.title("Training and Validation Loss")
-plt.xlabel("epoch")
-plt.show()
-
-# save plot
-plt.savefig("Learning_curves.png")
-
-# save the model
 
 model.save("ResNet_model.h5")

@@ -1,21 +1,19 @@
 import os
+import tensorflow as tf
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras import models, layers
+from tensorflow.keras.optimizers import SGD
 
 INPUT_SHAPE = (150, 150)
+batch_size = 32
 
-base_dir = ""
+base_dir = ""  # Base directory path
 
+# Training and validation directories
 train_dir = os.path.join(base_dir, "train")
 valid_dir = os.path.join(base_dir, "valid")
 
-class_names = os.listdir(train_dir)
-
-num_of_classes = len([subdir for subdir in os.listdir(train_dir)])
-
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from tensorflow.image import resize_with_crop_or_pad
-import tensorflow as tf
-
-# ImageDataGenerator nesnelerini güncelleme
+# ImageDataGenerator objects
 train_datagen = ImageDataGenerator(
     rescale=1.0 / 255.0,
     rotation_range=40,
@@ -31,28 +29,26 @@ validation_datagen = ImageDataGenerator(
     rescale=1.0 / 255.0,
 )
 
-
+# Data generators
 train_generator = train_datagen.flow_from_directory(
     train_dir,
     target_size=INPUT_SHAPE,
-    batch_size=50,
+    batch_size=batch_size,  # Update this to use the batch_size variable
     class_mode="categorical",
     shuffle=True,
 )
 
 validation_generator = validation_datagen.flow_from_directory(
-    valid_dir, target_size=INPUT_SHAPE, batch_size=30, class_mode="categorical"
+    valid_dir,
+    target_size=INPUT_SHAPE,
+    batch_size=batch_size,  # Update this to use the batch_size variable
+    class_mode="categorical",
 )
 
-# Construct the model
-import tensorflow as tf
-from tensorflow.keras import models, layers
-
-model = tf.keras.models.Sequential(
+# Model construction
+model = models.Sequential(
     [
-        tf.keras.layers.Conv2D(
-            32, (3, 3), activation="relu", input_shape=INPUT_SHAPE + (3,)
-        ),
+        layers.Conv2D(32, (3, 3), activation="relu", input_shape=INPUT_SHAPE + (3,)),
         layers.MaxPooling2D(2, 2),
         layers.Conv2D(64, (3, 3), activation="relu"),
         layers.MaxPooling2D(2, 2),
@@ -64,16 +60,16 @@ model = tf.keras.models.Sequential(
         layers.MaxPooling2D(2, 2),
         layers.Flatten(),
         layers.Dense(1024, activation="relu"),
-        layers.Dense(num_of_classes, activation="softmax"),
+        layers.Dense(
+            train_generator.num_classes, activation="softmax"
+        ),  # Update this to use the dynamic number of classes
     ]
 )
-
-
-from tensorflow.keras.optimizers import RMSprop, Adam, SGD
 
 optimizer = SGD(learning_rate=0.001, momentum=0.9)
 
 
+# Callback class
 class myCallback(tf.keras.callbacks.Callback):
     def on_epoch_end(self, epoch, logs={}):
         if logs.get("accuracy") > 0.95:
@@ -83,40 +79,37 @@ class myCallback(tf.keras.callbacks.Callback):
 
 callbacks = myCallback()
 
+# Model compilation
 model.compile(
     loss="categorical_crossentropy",
     optimizer=optimizer,
     metrics=["accuracy"],
 )
 
+# Fit the model
 history = model.fit(
     train_generator,
-    steps_per_epoch=150,
+    steps_per_epoch=train_generator.samples // batch_size,  # Corrected steps_per_epoch
     epochs=200,
     validation_data=validation_generator,
-    validation_steps=50,
+    validation_steps=validation_generator.samples
+    // batch_size,  # Consistency in validation steps
     verbose=1,
     callbacks=[callbacks],
 )
 
+# Save the model
 model.save("CNN_model.h5")
 
+# Plotting
 import matplotlib.pyplot as plt
 
-# Assuming 'history' is the variable containing the training history
 accuracy = history.history["accuracy"]
 val_accuracy = history.history["val_accuracy"]
-loss = history.history["loss"]
-val_loss = history.history["val_loss"]
 epochs = range(1, len(accuracy) + 1)
 
-# Plotting training & validation accuracy
-# Adjusted plotting to handle unequal length arrays
-min_epochs = min(len(epochs), len(val_accuracy))  # Find the minimum length
-plt.plot(epochs[:min_epochs], accuracy[:min_epochs], "bo", label="Training Accuracy")
-plt.plot(
-    epochs[:min_epochs], val_accuracy[:min_epochs], "b", label="Validation Accuracy"
-)
+plt.plot(epochs, accuracy, "bo", label="Training Accuracy")
+plt.plot(epochs, val_accuracy, "b", label="Validation Accuracy")
 plt.title("Training and Validation Accuracy")
 plt.legend()
 

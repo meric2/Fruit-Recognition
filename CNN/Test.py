@@ -9,22 +9,16 @@ class_names = os.listdir(test_dir)
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.image import resize_with_crop_or_pad
 
-
-def crop_to_target_size(image):
-    # TensorFlow'un resize_with_crop_or_pad fonksiyonu, hedef boyutu geçtiğinde kırpma, eksik olduğunda doldurma yapar.
-    # Burada, resmi her zaman hedef boyuta kırpıyoruz.
-    return resize_with_crop_or_pad(image, target_height=128, target_width=128)
-
+INPUT_SHAPE = (150, 150)
 
 test_datagen = ImageDataGenerator(
     rescale=1.0 / 255.0,
-    preprocessing_function=crop_to_target_size,
 )
 
 test_generator = test_datagen.flow_from_directory(
     test_dir,
-    target_size=(128, 128),
-    batch_size=10000,
+    target_size=INPUT_SHAPE,
+    batch_size=50,
     class_mode="categorical",
     shuffle=False,
 )
