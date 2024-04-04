@@ -1,6 +1,13 @@
 """
 Resizes images to wanted size.
 Uses seam carving while doing so to not lose too many features.
+
+Parameters:
+- image: The input image as a NumPy array.
+- output_size: A tuple specifying the desired output size (width, height).
+
+Returns:
+- The resized image as a NumPy array.
 """
 
 

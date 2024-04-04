@@ -1,13 +1,13 @@
 """
-    Crop the central part of the image and resize it to the specified size.
+Crop the central part of the image and resize it to the specified size.
 
-    Parameters:
-    - image: The input image as a NumPy array.
-    - output_size: A tuple specifying the desired output size (width, height).
+Parameters:
+- image: The input image as a NumPy array.
+- output_size: A tuple specifying the desired output size (width, height).
 
-    Returns:
-    - The cropped and resized image as a NumPy array.
-    """
+Returns:
+- The cropped and resized image as a NumPy array.
+"""
 
 import cv2
 import os
