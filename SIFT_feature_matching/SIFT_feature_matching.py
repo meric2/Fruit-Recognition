@@ -1,6 +1,6 @@
 """
 Yontem - 1
-Feature extraction using SIFT and Bag of Visual Words (BOVW) model
+Feature extraction using SIFT and Bag of Visual Words (BoVW) model.
 Feature extraction is done by SIFT.
 Bag of Visual Words (BOVW) model is used to represent images as histograms of visual words.
 Extracted features are then used to train a Support Vector Machine (SVM) model for image classification.

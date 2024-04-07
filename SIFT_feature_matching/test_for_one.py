@@ -28,12 +28,22 @@ def load_model():
 
     return clf_loaded, kmeans_loaded
 
+def load_label_mapping(labels_path):
+    with open(labels_path, 'r') as file:
+        labels = file.read().splitlines()
+    
+    # Create a mapping from numeric labels to fruit names
+    # Adjust the starting index based on your model's labeling convention (0 or 1)
+    label_mapping = {i: label for i, label in enumerate(labels)}
+    
+    return label_mapping
+
 def get_label_from_path(image_path):
     # Pick the folder name as the label
     parts = image_path.split(os.sep)
     return parts[-2]
 
-def process_single_image(image_path, sift, kmeans, clf):
+def process_single_image(image_path, sift, kmeans, clf, label_mapping):
     # Extract SIFT features from a single image
     img = cv2.imread(image_path)
     if img is None:
@@ -51,12 +61,18 @@ def process_single_image(image_path, sift, kmeans, clf):
 
     # Predict label for the single image
     prediction = clf.predict([histogram])
+    prediction_label = label_mapping.get(prediction[0], "Unknown")  # Convert numeric label to class name
+
     
-    return prediction, img
+    return prediction_label, img
 
 def main():
     # Load .pkl models
     clf_loaded, kmeans_loaded = load_model()
+
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    labels_path = os.path.join(script_dir, 'labels.txt')
+    label_mapping = load_label_mapping(labels_path)
 
     # Create SIFT object with the optimized parameters
     sift = cv2.SIFT_create(nfeatures=0, nOctaveLayers=5, contrastThreshold=0.04, edgeThreshold=10, sigma=1.2)
@@ -67,7 +83,7 @@ def main():
             break
 
         true_label = get_label_from_path(image_path)
-        prediction, img = process_single_image(image_path, sift, kmeans_loaded, clf_loaded)
+        prediction, img = process_single_image(image_path, sift, kmeans_loaded, clf_loaded, label_mapping)
 
         if img is not None:
             print(f"True Label: {true_label}, Predicted Label: {prediction[0]}")
