@@ -26,7 +26,9 @@ test_generator = test_datagen.flow_from_directory(
 
 import tensorflow as tf
 
+# Compile the model with desired metrics
 model = tf.keras.models.load_model("CNN_model.h5")
+model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
 # Evaluate the model on the test data and print the results and plot the confusion matrix
 import numpy as np

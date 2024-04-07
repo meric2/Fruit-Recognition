@@ -28,20 +28,6 @@ def load_model():
 
     return clf_loaded, kmeans_loaded
 
-def load_label_mapping(labels_path):
-    with open(labels_path, 'r') as file:
-        labels = file.read().splitlines()
-    
-    # Create a mapping from numeric labels to fruit names
-    # Adjust the starting index based on your model's labeling convention (0 or 1)
-    label_mapping = {i: label for i, label in enumerate(labels)}
-    
-    return label_mapping
-
-def get_label_from_path(image_path):
-    # Pick the folder name as the label
-    parts = image_path.split(os.sep)
-    return parts[-2]
 
 def process_single_image(image_path, sift, kmeans, clf, label_mapping):
     # Extract SIFT features from a single image
@@ -83,15 +69,10 @@ def main():
             break
 
         true_label = get_label_from_path(image_path)
-        prediction, img = process_single_image(image_path, sift, kmeans_loaded, clf_loaded, label_mapping)
+        prediction, img = process_single_image(image_path, sift, kmeans_loaded, clf_loaded)
 
-        if img is not None:
-            print(f"True Label: {true_label}, Predicted Label: {prediction[0]}")
-            cv2.putText(img, f"True: {true_label}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-            cv2.putText(img, f"Pred: {prediction[0]}", (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-            cv2.imshow("Image", img)
-            cv2.waitKey(0)  # Waits indefinitely until a key is pressed
-            cv2.destroyAllWindows()
+       
+        print(f"Predicted Label: {prediction[0]}")
 
 if __name__ == "__main__":
     main()

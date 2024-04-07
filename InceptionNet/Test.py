@@ -1,12 +1,12 @@
 import tensorflow as tf
 import matplotlib.pyplot as plt
+import numpy as np
+import seaborn as sns
+from sklearn.metrics import confusion_matrix
 
 test_dir = "test"
-
 batch_size = 32
-
 IMG_SIZE = (150, 150)
-
 
 test_dataset = tf.keras.utils.image_dataset_from_directory(
     test_dir,
@@ -24,43 +24,31 @@ test_datagen = tf.keras.preprocessing.image.ImageDataGenerator(rescale=1.0 / 255
 test_generator = test_datagen.flow_from_directory(
     test_dir,
     target_size=(150, 150),
-    batch_size=50000,
+    batch_size=50000,  # Loading all data at once
     class_mode="categorical",
     shuffle=False,
 )
 
+# Load the model
 model = tf.keras.models.load_model("InceptionNet.h5")
 
+# Compile the model with the desired metrics
+model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+
+# Evaluate the model
 test_loss, test_acc = model.evaluate(test_generator)
 
 print("\nTest accuracy: {:.2f}".format(test_acc))
 print("\nTest loss: {:.2f}".format(test_loss))
 
-# Confusion matrix
-import numpy as np
-from sklearn.metrics import confusion_matrix
-
-test_generator = test_datagen.flow_from_directory(
-    test_dir,
-    target_size=(150, 150),
-    batch_size=50000,
-    class_mode="categorical",
-    shuffle=False,
-)
-
+# Calculate predictions
 Y_pred = model.predict(test_generator)
 y_pred = np.argmax(Y_pred, axis=1)
 
-# show confusion matrix in a separate window
-import numpy as np
-import seaborn as sns
-import matplotlib.pyplot as plt
-from sklearn.metrics import confusion_matrix
-
-# Assuming 'y_pred' and 'test_generator.classes' are already defined
+# Calculate confusion matrix
 confusion_mtx = confusion_matrix(test_generator.classes, y_pred)
 
-# Create a heatmap for the confusion matrix
+# Plot confusion matrix
 plt.figure(figsize=(10, 8))
 sns.heatmap(
     confusion_mtx,
