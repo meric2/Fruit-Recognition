@@ -28,6 +28,16 @@ def load_model():
 
     return clf_loaded, kmeans_loaded
 
+def load_label_mapping(labels_path):
+    with open(labels_path, 'r') as file:
+        labels = file.read().splitlines()
+    
+    # Create a mapping from numeric labels to fruit names
+    # Adjust the starting index based on your model's labeling convention (0 or 1)
+    label_mapping = {i: label for i, label in enumerate(labels)}
+    
+    return label_mapping
+
 
 def process_single_image(image_path, sift, kmeans, clf, label_mapping):
     # Extract SIFT features from a single image
@@ -48,7 +58,6 @@ def process_single_image(image_path, sift, kmeans, clf, label_mapping):
     # Predict label for the single image
     prediction = clf.predict([histogram])
     prediction_label = label_mapping.get(prediction[0], "Unknown")  # Convert numeric label to class name
-
     
     return prediction_label, img
 
@@ -68,7 +77,6 @@ def main():
         if image_path.lower() == 'exit':
             break
 
-        true_label = get_label_from_path(image_path)
         prediction, img = process_single_image(image_path, sift, kmeans_loaded, clf_loaded)
 
        
