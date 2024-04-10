@@ -1,6 +1,8 @@
 # Fruit Recognition
 
-This project performs different classification models on fruits-360 and fruits-262 datasets.
+https://etuedutr-my.sharepoint.com/:f:/g/personal/ebelikirik_etu_edu_tr/Esr3AJnbnNBLgeCzJsl0ng8BhMNHlDiM9yu9FUAFzAaOFQ?e=E2j9Wf
+
+This project performs different classification models on fruits-360 and fruits-262 datasets
 
 ## Project Overview
 
