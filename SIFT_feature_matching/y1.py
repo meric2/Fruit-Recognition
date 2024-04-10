@@ -1,17 +1,16 @@
 """
-Yontem - 1
+Yontem - 1 after feedback
 Feature extraction using SIFT and Bag of Visual Words (BOVW) model
 Feature extraction is done by SIFT.
-Bag of Visual Words (BOVW) model is used to represent images as histograms of visual words.
-Extracted features are then used to train a Support Vector Machine (SVM) model for image classification.
+Bag of Visual Words (BOVW) model is used to represent images as histograms of visual words by kdTree.
+Extracted features are then used to train a K Nearest Neighbor (kNN) model for image classification.
 """
 
 import cv2
 import numpy as np
 import os
 import random
-from sklearn.cluster import KMeans
-from sklearn.svm import SVC
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import make_pipeline
 from sklearn.metrics import (
@@ -185,7 +184,7 @@ def display_sample_results(
 
 
 # Parameters
-num_clusters = 30
+num_clusters = 20
 root_dir_train = "data_128x128/train"
 root_dir_test = "data_128x128/test"
 root_dir_val = "data_128x128/validation"
@@ -215,8 +214,8 @@ X_train, y_train = bovw_histograms_train, labels_train
 X_test, y_test = bovw_histograms_test, labels_test
 X_val, y_val = bovw_histograms_val, labels_val
 
-# Model creation and training # Hyperparameter tuning for SVC is done on y1_para_opt.ipynb
-clf = make_pipeline(StandardScaler(), SVC(C=10, gamma="scale", kernel="rbf"))
+# Model creation and training
+clf = make_pipeline(StandardScaler(), KNeighborsClassifier(n_neighbors=5, weights='uniform'))
 clf.fit(X_train, y_train)
 
 # Model evaluation on test set
@@ -241,4 +240,4 @@ display_sample_results(image_paths_val, y_pred_val, y_val, label_to_id_val)
 
 #save models
 joblib.dump(kdtree, 'kdtree.pkl')
-joblib.dump(clf, 'svc_tree.pkl')
+joblib.dump(clf, 'knn_sift.pkl')

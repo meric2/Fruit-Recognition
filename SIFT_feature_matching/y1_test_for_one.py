@@ -1,5 +1,5 @@
 """
-This code tests the BoVW model on a single image.
+This code tests the BoVW model on a single image after feedback.
 The user is prompted to enter the path of an image, and the model will predict the label of the image.
 
 """
@@ -9,8 +9,7 @@ import cv2
 import numpy as np
 import os
 import random
-#from sklearn.cluster import KMeans
-from sklearn.svm import SVC
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -20,10 +19,10 @@ import joblib
 def load_model():
     # Assuming models are in the same directory as this script
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    svc_path = os.path.join(script_dir, 'svc_w_sift.pkl')
+    knn_path = os.path.join(script_dir, 'knn_sift.pkl')
     kdtree_path = os.path.join(script_dir, 'kdtree.pkl')
 
-    clf_loaded = joblib.load(svc_path)
+    clf_loaded = joblib.load(knn_path)
     kdtree_loaded = joblib.load(kdtree_path)
 
     return clf_loaded, kdtree_loaded
@@ -67,7 +66,7 @@ def main():
             break
 
         true_label = get_label_from_path(image_path)
-        prediction, img = process_single_image(image_path, sift, kdtree_loaded, clf_loaded, 30)
+        prediction, img = process_single_image(image_path, sift, kdtree_loaded, clf_loaded, 20)
 
         if img is not None:
             print(f"True Label: {true_label}, Predicted Label: {prediction[0]}")
