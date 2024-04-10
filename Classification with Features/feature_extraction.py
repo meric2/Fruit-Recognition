@@ -78,7 +78,7 @@ def calculate_lbp_histogram(image):
     hist, _ = np.histogram(lbp_image.ravel(), bins=64, range=(0, 256))
     hist = hist.astype("float")
     hist /= hist.sum() + 1e-7  # Normalize the histogram
-
+    hist = hist[:5]
     return hist
 
 
@@ -105,7 +105,7 @@ def calculate_dominant_color(image):
     return color
 
 
-def feature_extraction(folder):
+def feature_extraction(folder, type):
     texture_features = []
     histograms = []
     dominant_colors = []
@@ -141,11 +141,8 @@ def feature_extraction(folder):
         columns=["Area", "Perimeter", "Aspect Ratio", "Extent", "Solidity"],
     )
 
-    shape_df.to_csv("shape_features.csv", index=False)
-    texture_df.to_csv("texture_features.csv", index=False)
-    histogram_df.to_csv("histograms.csv", index=False)
-    color_df.to_csv("dominant_colors.csv", index=False)
-    label_df.to_csv("labels.csv", index=False)
+    df = pd.concat([texture_df, color_df, histogram_df, shape_df, label_df], axis=1)
+    df.to_csv(f"{type}_features.csv", index=False)
 
 
 def folder_feature_extraction(folder):
@@ -187,5 +184,6 @@ def folder_feature_extraction(folder):
     batch_df.to_csv("batch_features.csv", index=False)
 
 
-# feature_extraction("data")
+feature_extraction("data_128x128/train", "train")
+feature_extraction("data_128x128/test", "test")
 # folder_feature_extraction("cocoa bean")
