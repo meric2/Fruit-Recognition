@@ -32,6 +32,8 @@ The key aspects of this project includes three main methods with different model
 
 ## Usage
 
+All methods have 20 classes of different fruits. 
+
 Method 1:  
 
 - Dataset is reduced and splitted by `data_reduction.py` and `train_test_split`.  
