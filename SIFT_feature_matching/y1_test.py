@@ -1,9 +1,10 @@
 """
-Yontem - 1
+Yontem - 1 after feedback
 Feature extraction using SIFT and Bag of Visual Words (BOVW) model
 Feature extraction is done by SIFT.
 Bag of Visual Words (BOVW) model is used to represent images as histograms of visual words.
-Extracted features are then used to train a Support Vector Machine (SVM) model for image classification.
+Extracted features are then used to train a K Nearest Neighbor (kNN) model for image classification.
+This script can be used to test the models. 
 
 """
 
@@ -11,8 +12,7 @@ import cv2
 import numpy as np
 import os
 import random
-#from sklearn.cluster import KMeans
-from sklearn.svm import SVC
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import make_pipeline
 from sklearn.metrics import (
@@ -25,11 +25,11 @@ from sklearn.metrics import (
 import matplotlib.pyplot as plt
 import seaborn as sns
 import joblib
-from feedb import extract_features, create_bovw_histograms_kdtree, load_dataset, model_evaluation, display_all_results, display_sample_results
+from SIFT_feature_matching.y1 import extract_features, create_bovw_histograms_kdtree, load_dataset, model_evaluation, display_all_results, display_sample_results
 
 # Load trained models
 script_dir = os.path.dirname(os.path.abspath(__file__))
-save_path = os.path.join(script_dir, 'svc_w_sift.pkl')
+save_path = os.path.join(script_dir, 'knn_sift.pkl')
 clf_loaded = joblib.load(save_path)
 
 save_path = os.path.join(script_dir, 'kdtree.pkl')
@@ -37,7 +37,7 @@ kdtree_loaded = joblib.load(save_path)
 
 
 # Parameters
-num_clusters = 30
+num_clusters = 20
 root_dir_train = "data_128x128/train"
 root_dir_test = "data_128x128/test"
 root_dir_val = "data_128x128/validation"

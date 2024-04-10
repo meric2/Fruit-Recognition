@@ -77,7 +77,7 @@ def main():
         if image_path.lower() == 'exit':
             break
 
-        prediction, img = process_single_image(image_path, sift, kmeans_loaded, clf_loaded)
+        prediction, img = process_single_image(image_path, sift, kmeans_loaded, clf_loaded, label_mapping)
 
        
         print(f"Predicted Label: {prediction[0]}")
