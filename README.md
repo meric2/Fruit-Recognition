@@ -1,7 +1,7 @@
 # Fruit Recognition
 [OneDrive - For test data and Models](https://etuedutr-my.sharepoint.com/:f:/g/personal/ebelikirik_etu_edu_tr/Esr3AJnbnNBLgeCzJsl0ng8BhMNHlDiM9yu9FUAFzAaOFQ?e=E2j9Wf)
 
-Test data is in data_128x128.rar folder.
+Test data is in [data_128x128.rar](https://etuedutr-my.sharepoint.com/:u:/g/personal/ebelikirik_etu_edu_tr/ETK7gYCUcX1Fg8FEJzvWTugB3iWu7igch2m3abPMAH4Jcw?e=sGfCDh) folder.
 DO NOT use the test folder without its base folder.
 In the scripts the test directory is given as data_128x128/test.
 
