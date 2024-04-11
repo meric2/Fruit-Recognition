@@ -52,12 +52,12 @@ Method 2:
 
 - This method uses same train-test datasets with Method1
 - Go to folder `Classification with Features` (cd '.\Classification with Features\')
-- For testing, there is ML classification - Method2 folder at drive. You can download all files (*.pkl). And at last cell of train.ipynb you can test models. (Don't forget to use xgb_label_encoder for xgb model).
+- For testing, there is [ML classification - Method2](https://etuedutr-my.sharepoint.com/:f:/g/personal/ebelikirik_etu_edu_tr/ElqMCcWqBNdPg95hJOhufKEB1XZuNjsSGrBBrLaXuxK1qg?e=zrGlbs) folder at drive. You can download all files (*.pkl). And at last cell of train.ipynb you can test models. (Don't forget to use xgb_label_encoder for xgb model).
 - Instead with train-test .csv files you can run train.ipynb for re-train models and test all.
 - You can check feature_extraction.py to see how feature extraction is done and the code.
 
 Method 3:  
-- For CNN model download CNN_model.h5 from drive CNN Models folder and you can test model at CNN folder with Test.py file
+- For CNN model download CNN_model.h5 from drive [CNN Models folder](https://etuedutr-my.sharepoint.com/:f:/g/personal/ebelikirik_etu_edu_tr/EtaxM6rnsgdEm1f4G-uKMXMBUxbjgOVC0VigrDUoVpfAFg?e=s7Vcfx) and you can test model at CNN folder with Test.py file
 - For InceptionNet model download inceptionNet.h5 from drive CNN Models folder and you can test model at InceptionNet folder with Test.py file
 - For ResNet model download ResNet.h5 from drive CNN Models folder and you can test model at ResNet folder with Test.py file
 ## Contributors
