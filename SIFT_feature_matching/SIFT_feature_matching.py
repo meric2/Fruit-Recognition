@@ -11,7 +11,8 @@ import numpy as np
 import os
 import random
 from sklearn.cluster import KMeans
-#from sklearn.svm import SVC
+
+# from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import make_pipeline
@@ -20,7 +21,7 @@ from sklearn.metrics import (
     precision_score,
     recall_score,
     confusion_matrix,
-    f1_score
+    f1_score,
 )
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -97,11 +98,11 @@ def model_evaluation(X, y, y_pred):
     # Confusion Matrix
     cm = confusion_matrix(y, y_pred)
     print("Confusion Matrix:\n", cm)
-    plt.figure(figsize=(10, 7)) # Adjust the size as needed
+    plt.figure(figsize=(10, 7))  # Adjust the size as needed
     sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", cbar=False)
-    plt.xlabel('Predicted Labels')
-    plt.ylabel('True Labels')
-    plt.title('Confusion Matrix')
+    plt.xlabel("Predicted Labels")
+    plt.ylabel("True Labels")
+    plt.title("Confusion Matrix")
     plt.show()
 
     return {
@@ -111,7 +112,7 @@ def model_evaluation(X, y, y_pred):
         "F1 Score": f1,
         "Feature Count": feature_count,
         "Unique Match Ratio": unique_match_ratio,
-        "Confusion Matrix": cm
+        "Confusion Matrix": cm,
     }
 
 
@@ -182,7 +183,7 @@ def display_sample_results(
 
 
 # Parameters
-num_clusters = 30
+num_clusters = 20
 root_dir_train = "data_128x128/train"
 root_dir_test = "data_128x128/test"
 root_dir_val = "data_128x128/validation"
@@ -211,8 +212,10 @@ X_test, y_test = bovw_histograms_test, labels_test
 X_val, y_val = bovw_histograms_val, labels_val
 
 # Model creation and training # Hyperparameter tuning for SVC is done on y1_para_opt.ipynb
-#clf = make_pipeline(StandardScaler(), SVC(C=10, gamma="scale", kernel="rbf"))
-clf = make_pipeline(StandardScaler(), KNeighborsClassifier(n_neighbors=3, weights="uniform"))
+# clf = make_pipeline(StandardScaler(), SVC(C=10, gamma="scale", kernel="rbf"))
+clf = make_pipeline(
+    StandardScaler(), KNeighborsClassifier(n_neighbors=3, weights="uniform")
+)
 clf.fit(X_train, y_train)
 
 # Model evaluation on test set
@@ -235,6 +238,6 @@ validation_evaluation = model_evaluation(X_val, y_val, y_pred_val)
 display_sample_results(image_paths_val, y_pred_val, y_val, label_to_id_val)
 
 
-#save models
-joblib.dump(kmeans, 'kmeans.pkl')
-joblib.dump(clf, 'knn_sift.pkl')
+# save models
+joblib.dump(kmeans, "kmeans.pkl")
+joblib.dump(clf, "knn_sift.pkl")
