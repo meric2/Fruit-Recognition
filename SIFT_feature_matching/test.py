@@ -34,6 +34,9 @@ from SIFT_feature_matching import (
     display_all_results,
     display_sample_results,
 )
+import warnings
+
+warnings.filterwarnings("ignore")
 
 # Load trained models
 script_dir = os.path.dirname(os.path.abspath(__file__))

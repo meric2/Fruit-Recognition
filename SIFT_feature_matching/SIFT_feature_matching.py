@@ -24,6 +24,9 @@ from sklearn.metrics import (
 import matplotlib.pyplot as plt
 import seaborn as sns
 import joblib
+import warnings
+
+warnings.filterwarnings("ignore")
 
 
 # Functions
