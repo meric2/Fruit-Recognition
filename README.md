@@ -2,6 +2,9 @@
 
 https://etuedutr-my.sharepoint.com/:f:/g/personal/ebelikirik_etu_edu_tr/Esr3AJnbnNBLgeCzJsl0ng8BhMNHlDiM9yu9FUAFzAaOFQ?e=E2j9Wf
 
+Test datası data_128x128.rar içerisindedir. Test klasörünü base klasör olmadan kullanmayınız. Kodlarda test directionı olarak
+data_128x128/test kullanılmıştır.
+
 This project performs different classification models on fruits-360 and fruits-262 datasets
 
 ## Project Overview
