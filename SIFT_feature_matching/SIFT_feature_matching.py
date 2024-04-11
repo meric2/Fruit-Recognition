@@ -3,7 +3,7 @@ Yontem - 1
 Feature extraction using SIFT and Bag of Visual Words (BoVW) model.
 Feature extraction is done by SIFT.
 Bag of Visual Words (BOVW) model is used to represent images as histograms of visual words.
-Extracted features are then used to train a Support Vector Machine (SVM) model for image classification.
+Extracted features are then used to train a k-Nearest Neighbor (kNN) model for image classification.
 """
 
 import cv2
@@ -11,8 +11,6 @@ import numpy as np
 import os
 import random
 from sklearn.cluster import KMeans
-
-# from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import make_pipeline
