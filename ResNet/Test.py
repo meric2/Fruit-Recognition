@@ -3,7 +3,7 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import classification_report, confusion_matrix
 
 # Load the model
 model = tf.keras.models.load_model("ResNet.h5")
@@ -46,6 +46,21 @@ y_pred = np.argmax(predictions, axis=1)
 # Prepare true labels
 true_labels = np.concatenate([y for x, y in test_dataset], axis=0)
 y_true = np.argmax(true_labels, axis=1)
+
+print("Classification Report")
+target_names = class_names
+print(classification_report(y_true, y_pred, target_names=target_names))
+
+# write precision, recall, f1-score to terminal
+from sklearn.metrics import precision_recall_fscore_support
+
+precision, recall, f1_score, _ = precision_recall_fscore_support(
+    y_true, y_pred, average="macro"
+)
+print(f"Precision: {precision}")
+print(f"Recall: {recall}")
+print(f"F1 Score: {f1_score}")
+
 
 # Compute the confusion matrix
 confusion_mtx = confusion_matrix(y_true, y_pred)

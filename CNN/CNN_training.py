@@ -66,6 +66,8 @@ model = models.Sequential(
 
 optimizer = SGD(learning_rate=0.001, momentum=0.9)
 
+model.summary()
+
 
 # Callback class
 class myCallback(tf.keras.callbacks.Callback):

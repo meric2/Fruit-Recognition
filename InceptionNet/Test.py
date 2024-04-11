@@ -51,6 +51,15 @@ from sklearn.metrics import classification_report
 print("Classification Report")
 print(classification_report(test_generator.classes, y_pred, target_names=class_names))
 
+from sklearn.metrics import precision_recall_fscore_support
+
+precision, recall, f1_score, _ = precision_recall_fscore_support(
+    test_generator.classes, y_pred, average="macro"
+)
+print(f"Precision: {precision}")
+print(f"Recall: {recall}")
+print(f"F1 Score: {f1_score}")
+
 # Calculate confusion matrix
 confusion_mtx = confusion_matrix(test_generator.classes, y_pred)
 

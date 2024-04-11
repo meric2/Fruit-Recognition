@@ -49,6 +49,16 @@ print("Classification Report")
 target_names = class_names
 print(classification_report(y_true, y_pred, target_names=target_names))
 
+# write precision, recall, f1-score to terminal
+from sklearn.metrics import precision_recall_fscore_support
+
+precision, recall, f1_score, _ = precision_recall_fscore_support(
+    y_true, y_pred, average="macro"
+)
+print(f"Precision: {precision}")
+print(f"Recall: {recall}")
+print(f"F1 Score: {f1_score}")
+
 # Plot the confusion matrix
 import seaborn as sns
 
