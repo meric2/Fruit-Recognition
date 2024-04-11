@@ -13,7 +13,8 @@ import numpy as np
 import os
 import random
 from sklearn.cluster import KMeans
-from sklearn.svm import SVC
+#from sklearn.svm import SVC
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import make_pipeline
 from sklearn.metrics import (
@@ -30,7 +31,7 @@ from SIFT_feature_matching import extract_features, create_bovw_histograms, load
 
 # Load trained models
 script_dir = os.path.dirname(os.path.abspath(__file__))
-save_path = os.path.join(script_dir, 'svc_w_sift.pkl')
+save_path = os.path.join(script_dir, 'knn_sift.pkl')
 clf_loaded = joblib.load(save_path)
 
 save_path = os.path.join(script_dir, 'kmeans.pkl')
