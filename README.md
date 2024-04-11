@@ -51,8 +51,8 @@ Method 2:
 
 - This method uses same train-test datasets with Method1
 - Go to folder `Classification with Features` (cd '.\Classification with Features\')
-- For testing, there is ML classification - Method2 folder at drive. You can download all files (*.pkl and *.csv files). And at last cell of train.ipynb you can test models. (Don't forget to use xgb_label_encoder for xgb model).
-- Instead after downloading .csv files you can run train.ipynb for re-train models and test all.
+- For testing, there is ML classification - Method2 folder at drive. You can download all files (*.pkl). And at last cell of train.ipynb you can test models. (Don't forget to use xgb_label_encoder for xgb model).
+- Instead with train-test .csv files you can run train.ipynb for re-train models and test all.
 - You can check feature_extraction.py to see how feature extraction is done and the code.
 
 Method 3:  
