@@ -4,7 +4,8 @@ import numpy as np
 import seaborn as sns
 from sklearn.metrics import confusion_matrix
 
-test_dir = "test"
+
+test_dir = "data_128x128/test"
 batch_size = 32
 IMG_SIZE = (150, 150)
 
@@ -33,7 +34,7 @@ test_generator = test_datagen.flow_from_directory(
 model = tf.keras.models.load_model("InceptionNet.h5")
 
 # Compile the model with the desired metrics
-model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"])
 
 # Evaluate the model
 test_loss, test_acc = model.evaluate(test_generator)
@@ -44,6 +45,11 @@ print("\nTest loss: {:.2f}".format(test_loss))
 # Calculate predictions
 Y_pred = model.predict(test_generator)
 y_pred = np.argmax(Y_pred, axis=1)
+
+from sklearn.metrics import classification_report
+
+print("Classification Report")
+print(classification_report(test_generator.classes, y_pred, target_names=class_names))
 
 # Calculate confusion matrix
 confusion_mtx = confusion_matrix(test_generator.classes, y_pred)

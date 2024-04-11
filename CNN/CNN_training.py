@@ -7,11 +7,11 @@ from tensorflow.keras.optimizers import SGD
 INPUT_SHAPE = (150, 150)
 batch_size = 32
 
-base_dir = ""  # Base directory path
+base_dir = "data_128x128"  # Base directory path
 
 # Training and validation directories
 train_dir = os.path.join(base_dir, "train")
-valid_dir = os.path.join(base_dir, "valid")
+valid_dir = os.path.join(base_dir, "validation")
 
 # ImageDataGenerator objects
 train_datagen = ImageDataGenerator(
@@ -60,9 +60,7 @@ model = models.Sequential(
         layers.MaxPooling2D(2, 2),
         layers.Flatten(),
         layers.Dense(1024, activation="relu"),
-        layers.Dense(
-            train_generator.num_classes, activation="softmax"
-        ),  # Update this to use the dynamic number of classes
+        layers.Dense(train_generator.num_classes, activation="softmax"),
     ]
 )
 

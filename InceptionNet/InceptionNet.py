@@ -3,9 +3,12 @@
 import matplotlib.pyplot as plt
 import tensorflow as tf
 from tensorflow.keras.applications.inception_v3 import InceptionV3
+import os
 
-train_dir = "train"
-validation_dir = "valid"
+base_dir = "data_128x128"
+
+train_dir = os.path.join(base_dir, "train")
+validation_dir = os.path.join(base_dir, "validation")
 
 batch_size = 32
 IMG_SIZE = (150, 150)
@@ -78,41 +81,22 @@ validation_generator = validation_datagen.flow_from_directory(
     validation_dir, target_size=(150, 150), batch_size=20, class_mode="categorical"
 )
 
-
-class myCallback(tf.keras.callbacks.Callback):
-    def on_epoch_end(self, epoch, logs={}):
-        if logs.get("accuracy") > 0.90:
-            print("\nReached 90% accuracy so cancelling training!")
-            self.model.stop_training = True
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 
 
-callbacks = myCallback()
+early_stopping = [
+    EarlyStopping(monitor="val_loss", patience=50),
+    ModelCheckpoint(
+        filepath="inceptionNet.h5", monitor="val_loss", save_best_only=True
+    ),
+]
 
-history = model.fit_generator(
+history = model.fit(
     train_generator,
     validation_data=validation_generator,
-    steps_per_epoch=200,
+    steps_per_epoch=train_generator.samples // batch_size,
     epochs=200,
     validation_steps=40,
     verbose=1,
-    callbacks=[callbacks],
+    callbacks=[early_stopping],
 )
-
-
-# Plot the training and validation loss and accuracy
-acc = history.history["accuracy"]
-val_acc = history.history["val_accuracy"]
-loss = history.history["loss"]
-val_loss = history.history["val_loss"]
-
-epochs = range(len(acc))
-
-plt.plot(epochs, acc, "r", label="Training accuracy")
-plt.plot(epochs, val_acc, "b", label="Validation accuracy")
-plt.title("Training and validation accuracy")
-plt.legend()
-plt.figure()
-
-plt.show()
-
-model.save("inceptionNet.h5")

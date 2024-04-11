@@ -1,6 +1,6 @@
 import os
 
-base_dir = ""
+base_dir = "data_128x128"
 
 test_dir = os.path.join(base_dir, "test")
 
@@ -28,7 +28,7 @@ import tensorflow as tf
 
 # Compile the model with desired metrics
 model = tf.keras.models.load_model("CNN_model.h5")
-model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"])
 
 # Evaluate the model on the test data and print the results and plot the confusion matrix
 import numpy as np

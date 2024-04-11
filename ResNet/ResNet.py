@@ -5,9 +5,11 @@ import numpy as np
 import os
 import tensorflow as tf
 
+base_dir = "data_128x128"
 
-train_dir = "train"
-validation_dir = "valid"
+train_dir = os.path.join(base_dir, "train")
+validation_dir = os.path.join(base_dir, "validation")
+
 
 batch_size = 32
 IMG_SIZE = (160, 160)
@@ -41,6 +43,7 @@ data_augmentation = tf.keras.Sequential(
         tf.keras.layers.RandomFlip("horizontal"),
         tf.keras.layers.RandomRotation(0.2),
         tf.keras.layers.RandomZoom(0.1),
+        tf.keras.layers.RandomContrast(0.1),
     ]
 )
 
@@ -90,7 +93,7 @@ print(
 )
 
 
-base_learning_rate = 0.0001
+base_learning_rate = 0.001
 model.compile(
     optimizer=tf.keras.optimizers.Adam(learning_rate=base_learning_rate),
     loss=tf.keras.losses.CategoricalCrossentropy(from_logits=True),
@@ -102,28 +105,20 @@ model.summary()
 len(model.trainable_variables)
 
 
-class myCallback(tf.keras.callbacks.Callback):
-    def on_epoch_end(self, epoch, logs={}):
-        if logs.get("accuracy") > 0.90:
-            print("\nReached 90% accuracy so cancelling training!")
-            self.model.stop_training = True
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 
 
-callbacks = myCallback()
+early_stopping = [
+    EarlyStopping(monitor="val_loss", patience=20),
+    ModelCheckpoint(filepath="ResNet.h5", monitor="val_loss", save_best_only=True),
+]
 
-history = model.fit_generator(
+history = model.fit(
     train_dataset,
-    epochs=40,
+    epochs=50,
     validation_data=validation_dataset,
-    callbacks=[callbacks],
+    callbacks=[early_stopping],
     verbose=1,
     steps_per_epoch=len(train_dataset) // batch_size,
     validation_steps=20,
 )
-
-loss0, accuracy0 = model.evaluate(validation_dataset)
-
-print("initial loss: {:.2f}".format(loss0))
-print("initial accuracy: {:.2f}".format(accuracy0))
-
-model.save("ResNet_model.h5")

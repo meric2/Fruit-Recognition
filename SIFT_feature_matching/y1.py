@@ -18,18 +18,19 @@ from sklearn.metrics import (
     precision_score,
     recall_score,
     confusion_matrix,
-    f1_score
+    f1_score,
 )
 import matplotlib.pyplot as plt
 import seaborn as sns
 import joblib
 from sklearn.neighbors import KDTree
+from tqdm import tqdm
 
 
 # Functions
 def extract_features(image_paths, extractor):
     features = []
-    for path in image_paths:
+    for path in tqdm(image_paths):
         image = cv2.imread(path)
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         keypoints, descriptors = extractor.detectAndCompute(gray, None)
@@ -37,26 +38,31 @@ def extract_features(image_paths, extractor):
             features.append(descriptors)
     return np.concatenate(features, axis=0)
 
+
 # Function to build a KD-tree from SIFT features
-def build_kdtree(features, leaf_size=40):
+def build_kdtree(features, leaf_size=20):
     kdtree = KDTree(features, leaf_size=leaf_size)
     return kdtree
+
 
 # Function to create BOVW histograms using a KD-tree
 def create_bovw_histograms_kdtree(image_paths, extractor, kdtree, num_clusters):
     histograms = []
-    for path in image_paths:
+    for path in tqdm(image_paths):
         image = cv2.imread(path)
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         _, descriptors = extractor.detectAndCompute(gray, None)
         histogram = np.zeros(num_clusters)
         if descriptors is not None:
-            dist, ind = kdtree.query(descriptors, k=1)  # Query the KD-tree for the closest cluster
+            dist, ind = kdtree.query(
+                descriptors, k=1
+            )  # Query the KD-tree for the closest cluster
             for i in ind.flatten():  # Flatten the index array
                 i_mod = i % num_clusters  # Use modulo to ensure i is within range
                 histogram[i_mod] += 1
         histograms.append(histogram)
     return np.array(histograms)
+
 
 def load_dataset(root_dir):  # takes the folder name (class name) as label
     image_paths = []
@@ -99,11 +105,11 @@ def model_evaluation(X, y, y_pred):
     # Confusion Matrix
     cm = confusion_matrix(y, y_pred)
     print("Confusion Matrix:\n", cm)
-    plt.figure(figsize=(10, 7)) # Adjust the size as needed
+    plt.figure(figsize=(10, 7))  # Adjust the size as needed
     sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", cbar=False)
-    plt.xlabel('Predicted Labels')
-    plt.ylabel('True Labels')
-    plt.title('Confusion Matrix')
+    plt.xlabel("Predicted Labels")
+    plt.ylabel("True Labels")
+    plt.title("Confusion Matrix")
     plt.show()
 
     return {
@@ -113,7 +119,7 @@ def model_evaluation(X, y, y_pred):
         "F1 Score": f1,
         "Feature Count": feature_count,
         "Unique Match Ratio": unique_match_ratio,
-        "Confusion Matrix": cm
+        "Confusion Matrix": cm,
     }
 
 
@@ -198,15 +204,27 @@ image_paths_val, labels_val, label_to_id_val = load_dataset(root_dir_val)
 sift = cv2.SIFT_create(
     nfeatures=0, nOctaveLayers=5, contrastThreshold=0.04, edgeThreshold=10, sigma=1.2
 )
+
+print("SIFT feature extractor created")
+
 # Build the KD-tree from training features
 features_train = extract_features(image_paths_train, sift)
 kdtree = build_kdtree(features_train)
 
+print("KD-tree created")
 
 # Create BOVW histograms for each dataset using the KD-tree
-bovw_histograms_train = create_bovw_histograms_kdtree(image_paths_train, sift, kdtree, num_clusters)
-bovw_histograms_test = create_bovw_histograms_kdtree(image_paths_test, sift, kdtree, num_clusters)
-bovw_histograms_val = create_bovw_histograms_kdtree(image_paths_val, sift, kdtree, num_clusters)
+bovw_histograms_train = create_bovw_histograms_kdtree(
+    image_paths_train, sift, kdtree, num_clusters
+)
+bovw_histograms_test = create_bovw_histograms_kdtree(
+    image_paths_test, sift, kdtree, num_clusters
+)
+bovw_histograms_val = create_bovw_histograms_kdtree(
+    image_paths_val, sift, kdtree, num_clusters
+)
+
+print("BOVW histograms created")
 
 
 # Train, test, and validation data split
@@ -215,7 +233,9 @@ X_test, y_test = bovw_histograms_test, labels_test
 X_val, y_val = bovw_histograms_val, labels_val
 
 # Model creation and training
-clf = make_pipeline(StandardScaler(), KNeighborsClassifier(n_neighbors=5, weights='uniform'))
+clf = make_pipeline(
+    StandardScaler(), KNeighborsClassifier(n_neighbors=3, weights="uniform")
+)
 clf.fit(X_train, y_train)
 
 # Model evaluation on test set
@@ -238,6 +258,6 @@ validation_evaluation = model_evaluation(X_val, y_val, y_pred_val)
 display_sample_results(image_paths_val, y_pred_val, y_val, label_to_id_val)
 
 
-#save models
-joblib.dump(kdtree, 'kdtree.pkl')
-joblib.dump(clf, 'knn_sift.pkl')
+# save models
+joblib.dump(kdtree, "kdtree.pkl")
+joblib.dump(clf, "knn_sift.pkl")

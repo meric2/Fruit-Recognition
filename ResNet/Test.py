@@ -6,11 +6,12 @@ import os
 from sklearn.metrics import confusion_matrix
 
 # Load the model
-model = tf.keras.models.load_model("ResNet_model.h5")
+model = tf.keras.models.load_model("ResNet.h5")
 
 # Define the directory containing the test images
-test_dir = "test"
+base_dir = "data_128x128"
 
+test_dir = os.path.join(base_dir, "test")
 # Define the batch size and image size, consistent with the training phase
 batch_size = 32
 IMG_SIZE = (160, 160)

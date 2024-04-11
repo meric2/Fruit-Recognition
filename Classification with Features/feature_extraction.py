@@ -145,45 +145,20 @@ def feature_extraction(folder, type):
     df.to_csv(f"{type}_features.csv", index=False)
 
 
-def folder_feature_extraction(folder):
-    texture_features = []
-    histograms = []
-    dominant_colors = []
-    shape_features = []
-    labels = []
-    image_paths = []
-    for image_name in tqdm(os.listdir(folder)):
-        image_path = os.path.join(folder, image_name)
-        image = cv2.imread(image_path)
-
-        features = calculate_texture_features(image)
-        histogram = calculate_lbp_histogram(image)
-        color = calculate_dominant_color(image)
-        shape_feature = extract_shape_features(image)
-
-        shape_features.append(shape_feature)
-        texture_features.append(features)
-        histograms.append(histogram)
-        dominant_colors.append(color)
-        image_paths.append(image_path)
-        labels.append(folder)
-
-    texture = pd.DataFrame(texture_features, columns=["mean_lbp", "var_lbp"])
-    histogram = pd.DataFrame(histograms)
-    dominant_color = pd.DataFrame(dominant_colors, columns=["H", "S", "V"])
-    label = pd.DataFrame(labels, columns=["label"])
-    shape = pd.DataFrame(
-        shape_features,
-        columns=["Area", "Perimeter", "Aspect Ratio", "Extent", "Solidity"],
-    )
-    path = pd.DataFrame(image_paths, columns=["path"])
-
-    batch_df = pd.concat(
-        [texture, dominant_color, histogram, shape, label, path], axis=1
-    )
-    batch_df.to_csv("batch_features.csv", index=False)
-
-
-feature_extraction("data_128x128/train", "train")
-feature_extraction("data_128x128/test", "test")
+# feature_extraction("data_128x128/train", "train")
+# feature_extraction("data_128x128/test", "test")
 # folder_feature_extraction("cocoa bean")
+
+
+def single_image_feature(image, label):
+    features = []
+    texture = calculate_texture_features(image)
+    histogram = calculate_lbp_histogram(image)
+    color = calculate_dominant_color(image)
+    shape = extract_shape_features(image)
+    features.extend(texture)
+    features.extend(color)
+    features.extend(histogram)
+    features.extend(shape)
+    features.append(label)
+    return features
