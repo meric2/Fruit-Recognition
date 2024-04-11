@@ -45,8 +45,8 @@ Method 1:
 - Go to folder `SIFT_feature_matching` (cd SIFT_feature_matching)  
 - Run `SIFT_feature_matching.py` to train BoVW.
 - To test the models download and unzip [dataset](https://drive.google.com/file/d/1GuJqBZI2sCCiHzqjdmOI7IO7TdgeKRF-/view?usp=sharing). Then, run `test.py`. pkl files are provided.  
-- To find optimized parameters for SIFT and SVC, run `y1_parameter_optimization.ipynb` notebook.  
-- SVC is replaced with kNN (k Nearest Neighbor) model for classification.  
+- To find optimized parameters for SIFT, run `y1_parameter_optimization.ipynb` notebook.  
+- SVC is replaced with kNN (k Nearest Neighbor) model for classification. With the guidance of the Instructor.
 
 Method 2:  
 
