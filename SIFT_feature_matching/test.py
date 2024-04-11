@@ -13,7 +13,8 @@ import numpy as np
 import os
 import random
 from sklearn.cluster import KMeans
-#from sklearn.svm import SVC
+
+# from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import make_pipeline
@@ -22,24 +23,31 @@ from sklearn.metrics import (
     precision_score,
     recall_score,
     confusion_matrix,
-    f1_score
+    f1_score,
 )
 import matplotlib.pyplot as plt
 import seaborn as sns
 import joblib
-from SIFT_feature_matching import extract_features, create_bovw_histograms, load_dataset, model_evaluation, display_all_results, display_sample_results
+from SIFT_feature_matching import (
+    extract_features,
+    create_bovw_histograms,
+    load_dataset,
+    model_evaluation,
+    display_all_results,
+    display_sample_results,
+)
 
 # Load trained models
 script_dir = os.path.dirname(os.path.abspath(__file__))
-save_path = os.path.join(script_dir, 'knn_sift.pkl')
+save_path = os.path.join(script_dir, "knn_sift.pkl")
 clf_loaded = joblib.load(save_path)
 
-save_path = os.path.join(script_dir, 'kmeans.pkl')
+save_path = os.path.join(script_dir, "kmeans.pkl")
 kmeans_loaded = joblib.load(save_path)
 
 
 # Parameters
-num_clusters = 30
+num_clusters = 20
 root_dir_train = "data_128x128/train"
 root_dir_test = "data_128x128/test"
 root_dir_val = "data_128x128/validation"
