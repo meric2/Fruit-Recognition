@@ -6,7 +6,7 @@ DO NOT use the test folder without its base folder.
 In the scripts the test directory is given as data_128x128/test.
 
 
-This project performs different classification models on fruits-360 and fruits-262 datasets
+This project performs different classification models on [fruits-360](https://www.kaggle.com/datasets/moltean/fruits) and [fruits-262](https://www.kaggle.com/datasets/aelchimminut/fruits262) datasets.  
 
 ## Project Overview
 
@@ -26,7 +26,7 @@ The key aspects of this project includes three main methods with different model
 
 - Clone the repository
   ```bash
-  git clone https://github.com/meric2/Fruit-Recognition
+  git clone https://github.com/meric2/Fruit-Recognition.git
   ```
 
 - Install dependencies  
